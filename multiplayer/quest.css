@@ -1,0 +1,204 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Brush Script MT, Cursive, sans-serif;
+    background-color: #fff;
+    margin: 0;
+}
+
+/* Header/Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1f8dff;
+    padding: 0% 2%;
+    color: white;
+}
+
+.navbar .icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar .icon img {
+    height: 40px;
+    width: 40px;
+}
+
+.navbar h1 {
+    margin: 0;
+    font-size: 22px;
+    color: white;
+}
+
+.nav-links a {
+    display: block;
+    overflow: hidden;
+    list-style: none;
+    float: left;
+    font-size: 1.2vw;
+    margin: 0;
+    padding: 20px;
+    text-decoration: none;
+    color: white;
+}
+
+.nav-links a:hover {
+    background-color: white;
+    color: #1f8dff;
+}
+
+.nav-links .profil {
+    background: white;
+    color: #1f8dff;
+    border: none;
+    padding: 6px 16px;
+    margin: 15px 10px;
+    border-radius: 20px;
+    font-size: 1vw;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.nav-links .profil:hover {
+    background: #004b96;
+    color: white;
+}
+
+/* Container */
+.container {
+    padding: 30px;
+}
+
+.box {
+    background-color: #90CAF9;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.box-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.back-btn {
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: black;
+}
+
+.judul {
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 10px;
+    flex-grow: 1;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.tambah,
+.mulai {
+    background-color: white;
+    color: #2196F3;
+    font-weight: bold;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+/* Question Block */
+.question-block {
+    margin-top: 20px;
+    background-color: #90CAF9;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.question {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.option {
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    background-color: transparent;
+    font-size: 16px;
+}
+
+.option.correct {
+    background: #d4f8e8;
+    color: #219653;
+    font-weight: bold;
+}
+
+/* Tools */
+.tools {
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.tools form,
+.tools a {
+    display: inline-block;
+}
+
+.hapus {
+    background: #ef233c;
+    color: #fff;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+.ubah {
+    background: #3a86ff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.hapus:hover {
+    background: #d90429;
+}
+
+.ubah:hover {
+    background: #00509e;
+}
+
+.kunci {
+    font-size: 13px;
+    color: #219653;
+    margin-left: 8px;
+}
+
+.question-block {
+    margin-bottom: 24px;
+}

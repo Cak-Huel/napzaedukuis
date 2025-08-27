@@ -1,0 +1,203 @@
+body {
+    font-family: Brush Script MT, Cursive, sans-serif;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    width: 100%;
+}
+
+/* Header */
+header.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0% 2%;
+    background-color: #1f8dff;
+    color: white;
+}
+
+.navbar .icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar .icon img {
+    height: 40px;
+    width: 40px;
+}
+
+.navbar .icon h1 {
+    margin: 0;
+    font-size: 22px;
+    color: white;
+}
+
+.navbar nav a {
+    display: block;
+    float: left;
+    font-size: 1.2vw;
+    margin: 0;
+    padding: 20px;
+    text-decoration: none;
+    color: white;
+    text-decoration: none;
+}
+
+.navbar nav a:hover {
+    background-color: white;
+    color: #1f8dff;
+}
+
+.navbar .btn-profile {
+    background: white;
+    color: #1f8dff;
+    border: none;
+    padding: 6px 16px;
+    margin: 15px 10px;
+    border-radius: 20px;
+    font-size: 1vw;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.navbar .btn-profile:hover {
+    background-color: #004b96;
+    color: white;
+}
+
+.navbar .btn-login {
+    background: white;
+    color: #1f8dff;
+    border: none;
+    padding: 6px 16px;
+    margin: 15px 10px;
+    border-radius: 20px;
+    font-size: 1vw;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.navbar .btn-login:hover {
+    background-color: #004b96;
+    color: white;
+}
+
+.level-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0% 2%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn {
+    font-size: 24px;
+    background: none;
+    color: #000;
+    border: none;
+    cursor: pointer;
+    text-decoration: none
+}
+
+.level-header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.game-info {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+}
+
+.timer,
+.score {
+    padding: 6px 12px;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    font-size: 16px;
+    background: white;
+}
+
+/* End Header */
+
+/* games board */
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding: 20px;
+    height: 283px;
+}
+
+.card {
+    width: 140px;
+    height: 220px;
+    border-radius: 12px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.instruction {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+/* Popup for questions */
+.question-popup {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 3px solid #2196f3;
+    padding: 20px;
+    z-index: 999;
+    border-radius: 10px;
+    max-width: 90%;
+    width: 400px;
+}
+
+.question-popup h3 {
+    margin-top: 0;
+}
+
+.question-popup .options button {
+    display: block;
+    margin: 10px 0;
+    width: 100%;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 6px;
+    border: none;
+    background-color: #eee;
+    cursor: pointer;
+}
+
+.question-popup .options button:hover {
+    background-color: #ddd;
+}
+
+.question-popup .options button.correct {
+    background-color: #4caf50;
+    color: white;
+}
+
+.question-popup .options button.incorrect {
+    background-color: #f44336;
+    color: white;
+}
+
+/* end Popup for questions */

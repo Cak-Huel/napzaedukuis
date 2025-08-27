@@ -1,0 +1,92 @@
+/* Warna dasar */
+body {
+    background-color: #1f8dff;
+    font-family: Brush Script MT, Cursive, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #000;
+}
+
+/* Header Atas */
+.top-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    align-items: center;
+    color: white;
+}
+
+.player-name {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.right-info {
+    display: flex;
+    gap: 10px;
+}
+
+.timer-box,
+.score-box {
+    background: white;
+    color: black;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Kartu Pertanyaan */
+.question-card {
+    background-color: white;
+    border: 3px solid red;
+    width: 80%;
+    max-width: 700px;
+    margin: 30px auto;
+    border-radius: 20px;
+    padding: 40px 20px;
+    position: relative;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+.flower {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.bottom-flower {
+    top: auto;
+    bottom: 10px;
+    right: 10px;
+    left: auto;
+}
+
+/* Tombol Jawaban */
+.answer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 15px 40px 40px 40px;
+}
+
+.answer-btn {
+    font-family: Brush Script MT, Cursive, sans-serif;
+    background-color: white;
+    border: 3px solid #ccc;
+    border-radius: 25px;
+    padding: 15px 20px;
+    font-size: 16px;
+    text-align: left;
+    font-weight: normal;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.answer-btn:hover {
+    background-color: #0faf00;
+    border-color: #0faf00;
+}
