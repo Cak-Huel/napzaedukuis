@@ -1,0 +1,307 @@
+body {
+    font-family: Brush Script MT, Cursive, sans-serif;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2%;
+    background-color: #1f8dff;
+    color: #fff;
+}
+
+.navbar .icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar .icon img {
+    height: 40px;
+    width: 40px;
+}
+
+.navbar .icon h1 {
+    margin: 0;
+    font-size: 22px;
+    color: #fff;
+}
+
+.navbar nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar nav a {
+    font-size: 1.1rem;
+    padding: 12px 18px;
+    text-decoration: none;
+    color: #fff;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.navbar nav a:hover,
+.navbar nav a:focus {
+    background-color: #fff;
+    color: #1f8dff;
+}
+
+.btn-profil {
+    font-family: inherit;
+    font-size: 1rem;
+    background: #fff;
+    color: #1f8dff;
+    border: 2px solid #1f8dff;
+    padding: 8px 20px;
+    margin: 10px 0 10px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.btn-profil:hover,
+.btn-profil:focus {
+    background-color: #004b96;
+    color: #fff;
+    border-color: #004b96;
+}
+
+/* Progress Section */
+.progress-section {
+    padding: 10px 20px;
+    background: #fff;
+    position: relative;
+}
+
+.back-btn {
+    font-size: 24px;
+    color: #1f8dff;
+    border: none;
+    background: none;
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.back-btn:hover,
+.back-btn:focus {
+    color: #004b96;
+}
+
+.level-title {
+    text-align: center;
+    font-size: 18px;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+/* Progress Bar */
+.progress-container {
+    width: 100%;
+    background: #eee;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 20px;
+    background: #4caf50;
+    border-radius: 10px;
+    transition: width 0.5s;
+}
+
+/* Level Map */
+.level-map {
+    display: flex;
+    align-items: flex-end;
+    padding: 90px 40px;
+    min-width: 1000px;
+    gap: 40px;
+    overflow-x: auto;
+}
+
+.level {
+    text-align: center;
+    position: relative;
+    min-width: 90px;
+}
+
+.level p {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.pin {
+    width: 40px;
+    height: 60px;
+    background: #2196f3;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    margin: 0 auto 10px;
+}
+
+.btn-play {
+    background: #2196f3;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background 0.2s, color 0.2s;
+    margin-top: 8px;
+}
+
+.btn-play:hover,
+.btn-play:focus {
+    background: #1769aa;
+    color: #fff;
+}
+
+.level.locked .btn-play {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.lock {
+    width: 60px;
+    height: 30px;
+    background: #555;
+    margin: 10px auto 0;
+    border-radius: 6px;
+    position: relative;
+    display: block;
+    color: #fff;
+    font-size: 18px;
+    line-height: 30px;
+    text-align: center;
+}
+
+.level .lock {
+    display: none;
+}
+
+.level.locked .lock {
+    display: inline-block;
+}
+
+.lock::before {
+    content: '🔒';
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
+    color: #fff;
+}
+
+.connector {
+    width: 60px;
+    height: 4px;
+    background: #000;
+    border: 2px dashed #000;
+    align-self: center;
+}
+
+.completed {
+    color: #4caf50;
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+    font-size: 1rem;
+}
+
+/* Footer */
+footer {
+    background-color: #d9d9d9;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+    z-index: 100;
+}
+
+/* Media Queries */
+@media (max-width: 900px) {
+    .level-map {
+        min-width: 100%;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .level {
+        min-width: 70px;
+    }
+
+    .navbar nav a,
+    .btn-profil {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+
+    footer {
+        font-size: 0.95rem;
+        padding: 8px 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .level-map {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 10px;
+    }
+
+    .level {
+        min-width: 60px;
+    }
+
+    .navbar .icon h1 {
+        font-size: 16px;
+    }
+
+    .navbar nav a,
+    .btn-profil {
+        font-size: 0.8rem;
+        padding: 6px 8px;
+    }
+
+    .progress-bar {
+        height: 14px;
+    }
+
+    footer {
+        font-size: 0.85rem;
+        padding: 6px 0;
+    }
+}
