@@ -70,12 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // peserta di waiting_room akan menerima broadcast game_started -> pindah ke gameroom
   socket.on("game_started", (data) => {
     console.log("game_started:", data);
-    if (data && String(data.id_room) === String(id_room)) {
-      const url = `gameroom.php?id_room=${encodeURIComponent(
-        id_room
-      )}&id_peserta=${encodeURIComponent("")}`;
-      setTimeout(() => (window.location.href = url), 150);
-    }
+    // Guru/author tidak dialihkan ke gameroom
+    // Peserta di waiting_room yang dialihkan ke gameroom, bukan di sini
   });
 
   // peserta menerima notifikasi game berakhir
