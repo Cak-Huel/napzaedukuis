@@ -8,7 +8,9 @@
 }
 
 body {
-    font-family: Brush Script MT, Cursive, sans-serif;
+    font-family: "Comic Neue";
+    font-weight: 700;
+    font-style: normal;
     margin: 0;
 }
 
@@ -185,4 +187,53 @@ body {
     accent-color: white;
     width: 18px;
     height: 18px;
+}
+
+/*modal style */
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#modal-dialog {
+    background: #fff;
+    padding: 2em;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+#modal-close {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+#modal-title {
+    margin: 0;
+    font-size: 20px;
+}
+
+#modal-subtitle {
+    margin: 0;
+    font-size: 16px;
+    color: #666;
+}
+
+#modal-content {
+    margin-top: 10px;
 }

@@ -1,8 +1,15 @@
+<?php
+session_start();
+
+?>
 <!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="joinroom.css" />
     <link rel="icon" type="image/x-icon" href="../aset/logo1.png" />
     <title>Join Room - Napza Edu Card</title>
@@ -15,11 +22,30 @@
         <h1>NAPZA EDU CARD</h1>
       </div>
 
-      <nav>
+      <button class="hamburger-menu" id="hamburger-btn">
+        &#9776; </button>
+
+      <nav id="navbar-menu">
         <a href="../index.php">Beranda</a>
-        <a href="#">Panduan</a>
-        <a href="#">Tentang</a>
-        <a href="#" class="btn-profil">Login</a>
+        <a href="#panduan">Panduan</a>
+        <a href="#tentang">Tentang</a>
+        <?php if (isset($_SESSION['nama'])): ?>
+          <button
+            class="btn-profile"
+            title="Profil"
+            onclick="window.location.href='../user/profil.php'"
+          >
+            Profil
+          </button>
+        <?php else: ?>
+          <button
+            class="btn-login"
+            title="Masuk"
+            onclick="window.location.href='../user/login.php'"
+          >
+            Login
+          </button>
+        <?php endif; ?>
       </nav>
     </header>
 
@@ -60,10 +86,22 @@
       </div>
     </main>
 
+    <!-- Modal Dialog -->
+<div id="modal-overlay" style="display:none;">
+  <div id="modal-dialog">
+    <span id="modal-close">&times;</span>
+    <h2 id="modal-title">Judul Modal</h2>
+    <h4 id="modal-subtitle">Sub Judul</h4>
+    <div id="modal-content">Isi modal di sini.</div>
+  </div>
+</div>
+<!-- End Modal Dialog -->
+
     <!-- Footer -->
     <footer>
       <p>@2025 Napza Edu card</p>
     </footer>
+    <script src="../modal.js"></script>
     <script src="http://localhost:3000/socket.io/socket.io.js"></script>
     <script src="joinroom.js"></script>
   </body>

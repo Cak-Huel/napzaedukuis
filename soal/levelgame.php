@@ -12,6 +12,9 @@ $level = isset($_GET['level']) ? intval($_GET['level']) : 1;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="levelgame.css" />
     <link rel="icon" type="image/x-icon" href="../aset/logo1.png" />
     <script src="game.js" defer></script>
@@ -25,9 +28,12 @@ $level = isset($_GET['level']) ? intval($_GET['level']) : 1;
         <h1>NAPZA EDU CARD</h1>
       </div>
 
-      <nav>
-        <a href="#">Panduan</a>
-        <a href="#">Tentang</a>
+      <button class="hamburger-menu" id="hamburger-btn">
+        &#9776; </button>
+
+      <nav id="navbar-menu">
+        <a href="#panduan">Panduan</a>
+        <a href="#tentang">Tentang</a>
         <?php if (isset($_SESSION['nama'])): ?>
           <button
             class="btn-profile"
@@ -62,13 +68,97 @@ $level = isset($_GET['level']) ? intval($_GET['level']) : 1;
 
     <!-- Kartu-kartu permainan -->
     <main class="card-container">
-      <img src="../aset/card.png" alt="Kartu 1" class="card" />
-      <img src="../aset/card.png" alt="Kartu 2" class="card" />
-      <img src="../aset/card.png" alt="Kartu 3" class="card" />
-      <img src="../aset/card.png" alt="Kartu 4" class="card" />
-      <img src="../aset/card.png" alt="Kartu 5" class="card" />
+    <div class="flip-card">
+        <div class="flip-card-inner" onclick="flipCard(this, 1)">
+            <div class="flip-card-front">
+                <img src="../aset/card.png" alt="Kartu Depan" />
+            </div>
+            <div class="flip-card-back">
+                <div class="question-content">
+                    <h3 id="q-title-1">Memuat...</h3>
+                    <div id="q-options-1" class="options">
+                        <button class="answer-btn">Pilihan A</button>
+                        <button class="answer-btn">Pilihan B</button>
+                        <button class="answer-btn">Pilihan C</button>
+                        <button class="answer-btn">Pilihan D</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flip-card">
+        <div class="flip-card-inner" onclick="flipCard(this, 2)">
+            <div class="flip-card-front">
+                <img src="../aset/card.png" alt="Kartu Depan" />
+            </div>
+            <div class="flip-card-back">
+                <div class="question-content">
+                    <h3 id="q-title-2">Memuat...</h3>
+                    <div id="q-options-2" class="options">
+                        <button class="answer-btn">Pilihan A</button>
+                        <button class="answer-btn">Pilihan B</button>
+                        <button class="answer-btn">Pilihan C</button>
+                        <button class="answer-btn">Pilihan D</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flip-card">
+        <div class="flip-card-inner" onclick="flipCard(this, 3)">
+            <div class="flip-card-front">
+                <img src="../aset/card.png" alt="Kartu Depan" />
+            </div>
+            <div class="flip-card-back">
+                <div class="question-content">
+                    <h3 id="q-title-3">Memuat...</h3>
+                    <div id="q-options-3" class="options">
+                        <button class="answer-btn">Pilihan A</button>
+                        <button class="answer-btn">Pilihan B</button>
+                        <button class="answer-btn">Pilihan C</button>
+                        <button class="answer-btn">Pilihan D</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flip-card">
+        <div class="flip-card-inner" onclick="flipCard(this, 4)">
+            <div class="flip-card-front">
+                <img src="../aset/card.png" alt="Kartu Depan" />
+            </div>
+            <div class="flip-card-back">
+                <div class="question-content">
+                    <h3 id="q-title-4">Memuat...</h3>
+                    <div id="q-options-4" class="options">
+                        <button class="answer-btn">Pilihan A</button>
+                        <button class="answer-btn">Pilihan B</button>
+                        <button class="answer-btn">Pilihan C</button>
+                        <button class="answer-btn">Pilihan D</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flip-card">
+        <div class="flip-card-inner" onclick="flipCard(this, 5)">
+            <div class="flip-card-front">
+                <img src="../aset/card.png" alt="Kartu Depan" />
+            </div>
+            <div class="flip-card-back">
+                <div class="question-content">
+                    <h3 id="q-title-5">Memuat...</h3>
+                    <div id="q-options-5" class="options">
+                        <button class="answer-btn">Pilihan A</button>
+                        <button class="answer-btn">Pilihan B</button>
+                        <button class="answer-btn">Pilihan C</button>
+                        <button class="answer-btn">Pilihan D</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </main>
-
     <!-- Petunjuk -->
     <p class="instruction">Klik kartu untuk melihat dan menjawab pertanyaan</p>
 
@@ -80,5 +170,17 @@ $level = isset($_GET['level']) ? intval($_GET['level']) : 1;
       Lanjut ke Level Berikutnya
       </button>
 
+       <!-- Modal Dialog -->
+<div id="modal-overlay" style="display:none;">
+  <div id="modal-dialog">
+    <span id="modal-close">&times;</span>
+    <h2 id="modal-title">Judul Modal</h2>
+    <h4 id="modal-subtitle">Sub Judul</h4>
+    <div id="modal-content">Isi modal di sini.</div>
+  </div>
+</div>
+<!-- End Modal Dialog -->
+
+<script src="../modal.js"></script>
   </body>
 </html>

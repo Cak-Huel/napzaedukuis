@@ -28,6 +28,9 @@ if ($id_room) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="quest.css" />
     <link rel="icon" type="image/x-icon" href="../aset/logo1.png" />
     <title>NAPZA EDU CARD - Pertanyaan</title>
@@ -52,9 +55,9 @@ if ($id_room) {
       </div>
       <nav class="nav-links">
         <!--<a href="selection.php">Beranda</a>-->
-        <a href="#">Panduan</a>
-        <a href="#">Tentang</a>
-        <a href="#" class="profil">login</a>
+        <a href="#panduan">Panduan</a>
+        <a href="#tentang">Tentang</a>
+        <!-- <a href="#" class="profil">login</a> -->
       </nav>
     </header>
     <main class="container">
@@ -105,5 +108,18 @@ if ($id_room) {
         <?php endif; ?>
       </div>
     </main>
+
+     <!-- Modal Dialog -->
+<div id="modal-overlay" style="display:none;">
+  <div id="modal-dialog">
+    <span id="modal-close">&times;</span>
+    <h2 id="modal-title">Judul Modal</h2>
+    <h4 id="modal-subtitle">Sub Judul</h4>
+    <div id="modal-content">Isi modal di sini.</div>
+  </div>
+</div>
+<!-- End Modal Dialog -->
+
+<script src="../modal.js"></script>
   </body>
 </html>

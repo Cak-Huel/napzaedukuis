@@ -1,5 +1,7 @@
 body {
-    font-family: Brush Script MT, Cursive, sans-serif;
+    font-family: "Comic Neue";
+    font-weight: 700;
+    font-style: normal;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -136,68 +138,364 @@ header.navbar {
     height: 283px;
 }
 
-.card {
-    width: 140px;
-    height: 220px;
-    border-radius: 12px;
-    object-fit: cover;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.card:hover {
-    transform: scale(1.05);
-}
-
 .instruction {
     text-align: center;
     margin-top: 20px;
     font-size: 16px;
 }
 
-/* Popup for questions */
-.question-popup {
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    border: 3px solid #2196f3;
-    padding: 20px;
-    z-index: 999;
-    border-radius: 10px;
-    max-width: 90%;
-    width: 400px;
+/* --- CSS Kartu Berputar (Card Flip) --- */
+
+/* Kontainer utama untuk mengatur dimensi dan perspektif 3D */
+.flip-card {
+    background-color: transparent;
+    width: 140px;
+    /* Lebar kartu */
+    height: 220px;
+    /* Tinggi kartu */
+    border-radius: 12px;
+    perspective: 1000px;
+    /* Memberikan efek 3D */
+    position: relative;
+    /* Penting untuk penempatan z-index */
+    transition: transform 0.6s ease-in-out, z-index 0.0s 0.6s;
+    /* Transisi untuk animasi perpindahan. z-index diubah setelah transisi selesai. */
 }
 
-.question-popup h3 {
-    margin-top: 0;
-}
-
-.question-popup .options button {
-    display: block;
-    margin: 10px 0;
+/* Kontainer yang akan dirotasi */
+.flip-card-inner {
+    position: relative;
     width: 100%;
-    padding: 10px;
-    font-weight: bold;
-    border-radius: 6px;
-    border: none;
-    background-color: #eee;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    /* Durasi animasi */
+    transform-style: preserve-3d;
+    /* Pastikan anak elemen tetap dalam ruang 3D */
     cursor: pointer;
 }
 
-.question-popup .options button:hover {
+.flip-card-front img {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+/* Kelas untuk memicu putaran */
+.flip-card-inner.is-flipped {
+    transform: rotateY(180deg);
+}
+
+/* Sisi Depan dan Belakang kartu */
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    -webkit-backface-visibility: hidden;
+    /* Sembunyikan sisi belakang saat tidak menghadap ke depan */
+    backface-visibility: hidden;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Gaya Sisi Depan */
+.flip-card-front {
+    width: auto;
+    height: auto;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* Gaya Sisi Belakang (Konten Pertanyaan) */
+.flip-card-back {
+    /* MENGUBAH: Menggunakan gambar sebagai latar belakang */
+    background-image: url('../aset/card flip.png');
+    /* UBAH PATH INI JIKA GAMBAR BERADA DI FOLDER LAIN */
+    background-size: cover;
+    /* Pastikan gambar menutupi seluruh area kartu */
+    background-position: center;
+    /* Posisikan gambar di tengah */
+
+    color: white;
+    /* UBAH: Teks di atas kartu gelapmu harus menjadi putih agar terlihat */
+
+    transform: rotateY(180deg);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    /* Shadow lebih gelap agar gambar terlihat menonjol */
+}
+
+.flip-card-back .question-content {
+    /* Menyesuaikan konten pertanyaan agar pas di dalam kartu */
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    /* Sesuaikan ukuran font agar tulisan muat */
+    text-align: left;
+}
+
+.flip-card-back h3 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.flip-card-back .options {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.flip-card-back .options .answer-btn {
+    display: block;
+    width: 100%;
+    padding: 4px 6px;
+    font-weight: bold;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    font-size: 8px;
+    /* Ukuran font jawaban */
+    white-space: normal;
+    /* Memungkinkan teks jawaban memecah baris */
+}
+
+.flip-card-back .options .answer-btn:hover {
     background-color: #ddd;
 }
 
-.question-popup .options button.correct {
-    background-color: #4caf50;
-    color: white;
+/* --- Efek Kartu Fokus (Zoom & Center) --- */
+
+/* Gaya untuk Kartu yang Sedang Di-Flip dan Di-Fokus */
+.flip-card.is-focused {
+    z-index: 1001;
+    /* Pastikan kartu berada di atas semua elemen lain */
+
+    /* Transformasi 3D untuk memindahkan dan membesarkan kartu */
+    transform: translate(-50%, -50%) scale(2.2);
+    /* 2.5x ukuran asli, sesuaikan jika terlalu besar/kecil */
+
+    /* Posisikan titik awal transformasi ke tengah layar (viewport) */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+
+    /* Hapus bayangan (shadow) dari kartu lain yang tidak terfokus */
+    box-shadow: none;
+
+    /* Tambahkan bayangan baru (opsional, untuk efek 'terangkat') */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+    /* Pastikan transisi z-index langsung tanpa penundaan saat menghilangkan fokus */
+    transition: transform 0.6s ease-in-out, z-index 0s;
 }
 
-.question-popup .options button.incorrect {
-    background-color: #f44336;
-    color: white;
+/* Sembunyikan kartu lain di container agar fokus hanya pada kartu yang di-flip */
+.card-container.has-focus .flip-card:not(.is-focused) {
+    opacity: 0;
+    /* Membuat kartu lain menghilang */
+    pointer-events: none;
+    /* Membuat kartu lain tidak bisa diklik */
 }
 
-/* end Popup for questions */
+/* Menonaktifkan klik pada header/navbar saat mode fokus aktif */
+.card-container.has-focus~.navbar {
+    pointer-events: none;
+}
+
+/* --- OVERLAY UNTUK MENUTUP SELURUH LAYAR --- */
+
+.card-container::before {
+    content: '';
+    /* Wajib ada untuk elemen ::before */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    /* Awalnya transparan */
+    z-index: 1000;
+    /* Di bawah kartu yang terfokus (z-index: 1001) */
+    opacity: 0;
+    visibility: hidden;
+    /* Sembunyikan sepenuhnya dari interaksi */
+    transition: opacity 0.4s ease-in-out, visibility 0s 0.4s;
+}
+
+/* Terapkan overlay saat card-container memiliki class 'has-focus' */
+.card-container.has-focus::before {
+    background-color: rgba(0, 0, 0, 0.75);
+    /* Hitam transparan (75% opacity) */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.4s ease-in-out, visibility 0s;
+}
+
+/* End games board */
+
+/*modal style */
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#modal-dialog {
+    background: #fff;
+    padding: 2em;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+#modal-close {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+#modal-title {
+    margin: 0;
+    font-size: 20px;
+}
+
+#modal-subtitle {
+    margin: 0;
+    font-size: 16px;
+    color: #666;
+}
+
+#modal-content {
+    margin-top: 10px;
+}
+
+/* responsive design */
+@media (max-width: 768px) {
+
+    /* 1. Tombol Hamburger: Tampilkan di mobile */
+    .hamburger-menu {
+        display: block;
+        font-size: 30px;
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        z-index: 1003;
+    }
+
+    /* 2. Sembunyikan Tombol Hamburger di Desktop */
+    .navbar nav {
+        /* Hapus properti float: left dan display: block/inline-block untuk mobile */
+        display: flex;
+        flex-direction: column;
+        /* Menu berjejer vertikal */
+        align-items: flex-start;
+        /* Konten rata kiri */
+
+        position: fixed;
+        top: 0;
+        right: -300px;
+        /* Sembunyikan di luar layar */
+        width: 300px;
+        /* Lebar Side Bar */
+        height: 100%;
+        background-color: #1f8dff;
+        box-shadow: -4px 0 15px rgba(0, 0, 0, 0.3);
+        z-index: 1002;
+        transition: right 0.3s ease-in-out;
+        /* Animasi geser */
+        padding-top: 60px;
+        /* Ruang di atas */
+    }
+
+    /* 3. Kelas untuk Menampilkan Side Bar */
+    nav.open {
+        right: 0;
+        /* Geser ke posisi terlihat */
+    }
+
+    /* 4. Gaya Item Menu di Side Bar */
+    .navbar nav a {
+        /* Override gaya desktop */
+        float: none;
+        width: 100%;
+        padding: 15px 20px;
+        text-align: left;
+        box-sizing: border-box;
+        font-size: 18px;
+    }
+
+    .navbar nav a:hover {
+        background-color: white;
+        color: #1f8dff;
+    }
+
+    /* 5. Gaya Tombol (Profil/Login) di Side Bar */
+    .navbar .btn-profile,
+    .navbar .btn-login {
+        /* Override gaya desktop */
+        width: 80%;
+        font-size: 16px;
+        margin: 20px 20px 15px;
+    }
+
+    /* Memicu tata letak horizontal scroll pada .card-container */
+    .card-container {
+        flex-direction: column;
+
+        /* 2. Aktifkan scrolling horizontal saat konten melebihi lebar layar */
+        overflow-x: auto;
+
+        /* 3. Kartu berjejer mulai dari kiri */
+        justify-content: flex-start;
+
+        /* 4. Menghapus tinggi tetap yang tidak diperlukan saat scrolling */
+        height: auto;
+
+        /* 5. Memberi padding horizontal di awal/akhir baris kartu */
+        padding: 20px;
+    }
+
+    /* Menonaktifkan properti 3D agar kartu tidak membesar */
+    .flip-card {
+        perspective: none;
+        /* Nonaktifkan efek 3D yang menyebabkan zoom */
+    }
+
+    /* Opsional: Membuat scrollbar tidak terlihat (hanya di beberapa browser) */
+    .card-container::-webkit-scrollbar {
+        display: none;
+    }
+}

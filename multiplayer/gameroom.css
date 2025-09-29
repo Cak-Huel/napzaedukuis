@@ -1,7 +1,9 @@
 /* Warna dasar */
 body {
     background-color: #1f8dff;
-    font-family: Brush Script MT, Cursive, sans-serif;
+    font-family: "Comic Neue";
+    font-weight: 700;
+    font-style: normal;
     margin: 0;
     padding: 0;
     color: #000;

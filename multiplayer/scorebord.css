@@ -1,6 +1,8 @@
 body {
     margin: 0;
-    font-family: Brush Script MT, Cursive, sans-serif;
+    font-family: "Comic Neue";
+    font-weight: 700;
+    font-style: normal;
     background-color: #2389f2;
 }
 

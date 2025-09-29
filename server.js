@@ -7,14 +7,6 @@ const io = socketio(server, {
   cors: { origin: "*" },
 });
 
-// Basic global error logging so process shows useful logs (don't rely hanya ini)
-process.on("uncaughtException", (err) => {
-  console.error("UNCAUGHT EXCEPTION:", err && err.stack ? err.stack : err);
-});
-process.on("unhandledRejection", (reason, p) => {
-  console.error("UNHANDLED REJECTION at:", p, "reason:", reason);
-});
-
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
@@ -28,6 +20,7 @@ io.on("connection", (socket) => {
       return;
     }
 
+    // cari id_room berdasarkan kode_room
     db.query(
       "SELECT id_room, kode_room FROM room WHERE kode_room = ?",
       [kode_room],
@@ -52,9 +45,11 @@ io.on("connection", (socket) => {
         const id_room = results[0].id_room;
         const roomKode = results[0].kode_room;
 
+        // gabung socket ke room agar bisa menerima broadcast
         socket.join(String(id_room));
         console.log(`Socket ${socket.id} joined socket room ${id_room}`);
 
+        // insert peserta ke tabel room_player (asumsikan kolom: id_room, nama_guest, skor, waktu_masuk)
         db.query(
           "INSERT INTO room_player (id_room, nama_guest, skor, waktu_masuk) VALUES (?, ?, 0, NOW())",
           [id_room, nama_guest],
@@ -71,6 +66,7 @@ io.on("connection", (socket) => {
             const id_peserta = res2.insertId;
             console.log(`Inserted peserta ${id_peserta} for room ${id_room}`);
 
+            // kirim hasil ke client yang join
             socket.emit("join_result", { success: true, id_room, id_peserta });
 
             // kirim update daftar peserta (room_info) ke semua socket di room
@@ -103,7 +99,7 @@ io.on("connection", (socket) => {
       "SELECT id_room, kode_room FROM room WHERE kode_room=?",
       [kode_room],
       (err, roomRes) => {
-        if (err || !roomRes || roomRes.length === 0) {
+        if (err || roomRes.length === 0) {
           socket.emit("room_info", { success: false });
         } else {
           const id_room = roomRes[0].id_room;
@@ -127,7 +123,9 @@ io.on("connection", (socket) => {
     );
   });
 
-  // get_room_info_by_id (join to socket.io room so client will receive broadcasts)
+  // Event ambil info room berdasarkan id_room
+  // Pastikan client yang membuka participant/waiting_room memanggil ini.
+  // Handler ini juga membuat socket masuk ke socket.io room agar bisa menerima broadcast game_started
   socket.on("get_room_info_by_id", (id_room) => {
     console.log(
       "Server received get_room_info_by_id:",
@@ -154,6 +152,7 @@ io.on("connection", (socket) => {
           return;
         }
 
+        // join ke socket room supaya menerima broadcast
         try {
           socket.join(String(id_room));
           console.log(
@@ -185,7 +184,7 @@ io.on("connection", (socket) => {
     );
   });
 
-  // start_game
+  // Handler tombol Mulai pada participant (author)
   socket.on("start_game", (id_room) => {
     console.log("start_game received from", socket.id, "for id_room:", id_room);
     if (!id_room) {
@@ -196,6 +195,7 @@ io.on("connection", (socket) => {
       return;
     }
 
+    // update status di DB (pastikan kolom 'status' bisa menerima nilai 'mulai' atau gunakan VARCHAR)
     db.query(
       "UPDATE room SET status = ? WHERE id_room = ?",
       ["mulai", id_room],
@@ -209,9 +209,10 @@ io.on("connection", (socket) => {
           return;
         }
 
+        // Beri tahu author bahwa start berhasil
         socket.emit("start_result", { success: true });
 
-        // Broadcast game_started to socket.io room
+        // Broadcast ke semua socket yang sudah join ke socket room ini (peserta di waiting room)
         io.to(String(id_room)).emit("game_started", {
           id_room: String(id_room),
         });
@@ -220,12 +221,9 @@ io.on("connection", (socket) => {
     );
   });
 
-  // get_question
+  // Kirim soal selanjutnya yang belum dijawab peserta di room
   socket.on("get_question", ({ id_room, id_peserta }) => {
-    console.log("get_question request from", socket.id, {
-      id_room,
-      id_peserta,
-    });
+    console.log("Sending next question...");
     if (!id_room || !id_peserta) {
       socket.emit("question_data", null);
       return;
@@ -260,7 +258,7 @@ io.on("connection", (socket) => {
     });
   });
 
-  // submit_answer
+  // Terima jawaban, simpan, update skor, lalu kirim soal berikutnya atau game_ended
   socket.on(
     "submit_answer",
     ({ id_peserta, id_soalmlt, jawaban, waktu_jawab }) => {
@@ -277,37 +275,102 @@ io.on("connection", (socket) => {
         return;
       }
 
-      // Lookup id_room dari id_peserta
+      // ambil soal untuk cek benar dan nilai skor
       db.query(
-        "SELECT id_room FROM room_player WHERE id_peserta = ? LIMIT 1",
-        [id_peserta],
-        (errRoom, roomRows) => {
-          if (errRoom || !roomRows || roomRows.length === 0) {
-            console.error(
-              "submit_answer: gagal lookup id_room dari id_peserta",
-              errRoom
-            );
+        "SELECT jwbn_benar, skor FROM soal_mlt WHERE id_soalmlt = ?",
+        [id_soalmlt],
+        (errQ, qrows) => {
+          if (errQ || !qrows || qrows.length === 0) {
+            console.error("DB select soal error:", errQ);
             return;
           }
-          const id_room = roomRows[0].id_room;
+          const benarJawaban =
+            String(jawaban).trim() === String(qrows[0].jwbn_benar).trim()
+              ? 1
+              : 0;
+          const nilaiSoal = qrows[0].skor || 0;
 
-          // Prevent duplicate inserts: check if answer already exists
+          // simpan jawaban
           db.query(
-            "SELECT 1 FROM jawaban_room WHERE id_peserta = ? AND id_soalmlt = ? LIMIT 1",
-            [id_peserta, id_soalmlt],
-            (errChk, chkRows) => {
-              if (errChk) {
-                console.error("DB check existing jawaban error:", errChk);
-                // proceed cautiously (we can still attempt insert)
-              }
-              if (chkRows && chkRows.length) {
+            "INSERT INTO jawaban_room (id_peserta, id_soalmlt, jawaban, benar, waktu_jawab) VALUES (?, ?, ?, ?, ?)",
+            [id_peserta, id_soalmlt, jawaban, benarJawaban, waktu_jawab],
+            (errIns, resIns) => {
+              if (errIns) {
+                console.error("DB insert jawaban_room error:", errIns);
+                // lanjutkan agar client tidak stuck
+              } else {
                 console.log(
-                  "Duplicate answer attempt ignored for peserta:",
+                  "Inserted jawaban_room id:",
+                  resIns.insertId,
+                  "for peserta:",
                   id_peserta,
                   "soal:",
-                  id_soalmlt
+                  id_soalmlt,
+                  "benar:",
+                  benarJawaban
                 );
-                // Still respond with score (current) and next question to keep client in sync
+              }
+
+              // jika benar -> tambahkan skor ke room_player
+              const afterScoreEmit = () => {
+                // kirim soal berikutnya untuk peserta yang sama
+                const sqlNext =
+                  "SELECT sm.* FROM soal_mlt sm WHERE sm.id_room = (SELECT id_room FROM room_player WHERE id_peserta = ?) AND sm.id_soalmlt NOT IN (SELECT id_soalmlt FROM jawaban_room WHERE id_peserta = ?) ORDER BY sm.id_soalmlt ASC LIMIT 1";
+                db.query(
+                  sqlNext,
+                  [id_peserta, id_peserta],
+                  (errNext, nextRows) => {
+                    if (errNext) {
+                      console.error(
+                        "DB get next question after submit error:",
+                        errNext
+                      );
+                      socket.emit("next_question"); // coba trigger client untuk meminta lagi
+                      return;
+                    }
+                    if (!nextRows || nextRows.length === 0) {
+                      // tidak ada soal lagi untuk peserta -> selesai (untuk peserta ini)
+                      socket.emit("game_ended", {
+                        id_room: String(id_room),
+                        reason: "no_more_questions_after_submit",
+                      });
+                    } else {
+                      const nq = nextRows[0];
+                      socket.emit("question_data", {
+                        id_soalmlt: nq.id_soalmlt,
+                        pertanyaan: nq.pertanyaan,
+                        jwbn_a: nq.jwbn_a,
+                        jwbn_b: nq.jwbn_b,
+                        jwbn_c: nq.jwbn_c,
+                        jwbn_d: nq.jwbn_d,
+                        skor: nq.skor,
+                      });
+                    }
+                  }
+                );
+              };
+
+              if (benarJawaban) {
+                db.query(
+                  "UPDATE room_player SET skor = skor + ? WHERE id_peserta = ?",
+                  [nilaiSoal, id_peserta],
+                  (errUp) => {
+                    if (errUp) console.error("DB update skor error:", errUp);
+                    // kirim skor terbaru ke peserta
+                    db.query(
+                      "SELECT skor FROM room_player WHERE id_peserta = ?",
+                      [id_peserta],
+                      (errSk, skRes) => {
+                        if (!errSk && skRes && skRes.length) {
+                          socket.emit("score_update", { skor: skRes[0].skor });
+                        }
+                        afterScoreEmit();
+                      }
+                    );
+                  }
+                );
+              } else {
+                // jika salah, kirim skor sekarang tanpa perubahan
                 db.query(
                   "SELECT skor FROM room_player WHERE id_peserta = ?",
                   [id_peserta],
@@ -315,185 +378,10 @@ io.on("connection", (socket) => {
                     if (!errSk && skRes && skRes.length) {
                       socket.emit("score_update", { skor: skRes[0].skor });
                     }
-                    // Emit next question for this participant (if any)
-                    const sqlNext =
-                      "SELECT sm.* FROM soal_mlt sm WHERE sm.id_room = (SELECT id_room FROM room_player WHERE id_peserta = ?) AND sm.id_soalmlt NOT IN (SELECT id_soalmlt FROM jawaban_room WHERE id_peserta = ?) ORDER BY sm.id_soalmlt ASC LIMIT 1";
-                    db.query(
-                      sqlNext,
-                      [id_room, id_peserta],
-                      (errNext, nextRows) => {
-                        if (errNext) {
-                          console.error(
-                            "DB get next question after duplicate submit error:",
-                            errNext
-                          );
-                          socket.emit("next_question");
-                          return;
-                        }
-                        if (!nextRows || nextRows.length === 0) {
-                          // fetch id_room to include in game_ended notice
-                          db.query(
-                            "SELECT id_room FROM room_player WHERE id_peserta = ?",
-                            [id_peserta],
-                            (errR, rRes) => {
-                              const rid =
-                                rRes && rRes[0] ? rRes[0].id_room : null;
-                              socket.emit("game_ended", {
-                                id_room: rid ? String(rid) : null,
-                                reason: "no_more_questions_after_submit",
-                              });
-                            }
-                          );
-                        } else {
-                          const nq = nextRows[0];
-                          socket.emit("question_data", {
-                            id_soalmlt: nq.id_soalmlt,
-                            pertanyaan: nq.pertanyaan,
-                            jwbn_a: nq.jwbn_a,
-                            jwbn_b: nq.jwbn_b,
-                            jwbn_c: nq.jwbn_c,
-                            jwbn_d: nq.jwbn_d,
-                            skor: nq.skor,
-                          });
-                        }
-                      }
-                    );
+                    afterScoreEmit();
                   }
                 );
-                return;
               }
-
-              // proceed: get soal to check correct and value
-              db.query(
-                "SELECT jwbn_benar, skor FROM soal_mlt WHERE id_soalmlt = ?",
-                [id_soalmlt],
-                (errQ, qrows) => {
-                  if (errQ || !qrows || qrows.length === 0) {
-                    console.error("DB select soal error:", errQ);
-                    return;
-                  }
-                  const benarJawaban =
-                    String(jawaban || "").trim() ===
-                    String(qrows[0].jwbn_benar).trim()
-                      ? 1
-                      : 0;
-                  const nilaiSoal = qrows[0].skor || 0;
-
-                  // insert jawaban
-                  const jawabanFinal = jawaban == null ? "" : jawaban;
-                  db.query(
-                    "INSERT INTO jawaban_room (id_peserta, id_soalmlt, jawaban, benar, waktu_jawab) VALUES (?, ?, ?, ?, ?)",
-                    [
-                      id_peserta,
-                      id_soalmlt,
-                      jawaban,
-                      benarJawaban,
-                      waktu_jawab,
-                    ],
-                    (errIns, resIns) => {
-                      if (errIns) {
-                        console.error("DB insert jawaban_room error:", errIns);
-                        // continue flow to keep client responsive
-                      } else {
-                        console.log(
-                          "Inserted jawaban_room id:",
-                          resIns.insertId,
-                          "for peserta:",
-                          id_peserta,
-                          "soal:",
-                          id_soalmlt,
-                          "benar:",
-                          benarJawaban
-                        );
-                      }
-
-                      const afterScoreEmit = () => {
-                        // find next question for this participant
-                        const sqlNext =
-                          "SELECT sm.* FROM soal_mlt sm WHERE sm.id_room = (SELECT id_room FROM room_player WHERE id_peserta = ?) AND sm.id_soalmlt NOT IN (SELECT id_soalmlt FROM jawaban_room WHERE id_peserta = ?) ORDER BY sm.id_soalmlt ASC LIMIT 1";
-                        db.query(
-                          sqlNext,
-                          [id_room, id_peserta],
-                          (errNext, nextRows) => {
-                            if (errNext) {
-                              console.error(
-                                "DB get next question after submit error:",
-                                errNext
-                              );
-                              socket.emit("next_question"); // ask client to request again (fallback)
-                              return;
-                            }
-                            if (!nextRows || nextRows.length === 0) {
-                              // no next question - determine id_room to include in message
-                              db.query(
-                                "SELECT id_room FROM room_player WHERE id_peserta = ?",
-                                [id_peserta],
-                                (errR, rRes) => {
-                                  const rid =
-                                    rRes && rRes[0] ? rRes[0].id_room : null;
-                                  socket.emit("game_ended", {
-                                    id_room: rid ? String(rid) : null,
-                                    reason: "no_more_questions_after_submit",
-                                  });
-                                }
-                              );
-                            } else {
-                              const nq = nextRows[0];
-                              socket.emit("question_data", {
-                                id_soalmlt: nq.id_soalmlt,
-                                pertanyaan: nq.pertanyaan,
-                                jwbn_a: nq.jwbn_a,
-                                jwbn_b: nq.jwbn_b,
-                                jwbn_c: nq.jwbn_c,
-                                jwbn_d: nq.jwbn_d,
-                                skor: nq.skor,
-                              });
-                            }
-                          }
-                        );
-                      };
-
-                      if (benarJawaban) {
-                        db.query(
-                          "UPDATE room_player SET skor = skor + ? WHERE id_peserta = ?",
-                          [nilaiSoal, id_peserta],
-                          (errUp) => {
-                            if (errUp)
-                              console.error("DB update skor error:", errUp);
-                            // kirim skor terbaru ke peserta
-                            db.query(
-                              "SELECT skor FROM room_player WHERE id_peserta = ?",
-                              [id_peserta],
-                              (errSk, skRes) => {
-                                if (!errSk && skRes && skRes.length) {
-                                  socket.emit("score_update", {
-                                    skor: skRes[0].skor,
-                                  });
-                                }
-                                afterScoreEmit();
-                              }
-                            );
-                          }
-                        );
-                      } else {
-                        // jika salah, kirim skor sekarang tanpa perubahan
-                        db.query(
-                          "SELECT skor FROM room_player WHERE id_peserta = ?",
-                          [id_peserta],
-                          (errSk, skRes) => {
-                            if (!errSk && skRes && skRes.length) {
-                              socket.emit("score_update", {
-                                skor: skRes[0].skor,
-                              });
-                            }
-                            afterScoreEmit();
-                          }
-                        );
-                      }
-                    }
-                  );
-                }
-              );
             }
           );
         }
@@ -501,48 +389,47 @@ io.on("connection", (socket) => {
     }
   );
 
-  // Scoreboard compatibility: listen to both spellings, emit both
-  const handleGetScore = (id_room) => {
+  // Event untuk mendapatkan scoreboard
+  socket.on("get_scoreboard", (id_room) => {
+    // Ambil peserta dan skor
     db.query(
       "SELECT id_peserta, nama_guest, skor FROM room_player WHERE id_room=? ORDER BY skor DESC",
       [id_room],
       (err, pesertaRes) => {
-        if (err || !pesertaRes || pesertaRes.length === 0) {
-          socket.emit("scorebord_data", { peserta: [] });
+        if (err || pesertaRes.length === 0) {
           socket.emit("scoreboard_data", { peserta: [] });
         } else {
+          // Ambil semua jawaban peserta
           const pesertaIds = pesertaRes.map((p) => p.id_peserta);
           db.query(
             "SELECT id_peserta, id_soalmlt, benar FROM jawaban_room WHERE id_peserta IN (?) ORDER BY id_soalmlt ASC",
             [pesertaIds],
             (err2, jawabanRes) => {
-              if (!err2 && jawabanRes) {
-                pesertaRes.forEach((peserta) => {
-                  peserta.jawaban = jawabanRes
-                    .filter((j) => j.id_peserta === peserta.id_peserta)
-                    .map((j) => ({ benar: j.benar === 1 }));
-                });
-              } else {
-                pesertaRes.forEach((peserta) => (peserta.jawaban = []));
-              }
-              socket.emit("scorebord_data", { peserta: pesertaRes });
+              // Gabungkan jawaban ke peserta
+              pesertaRes.forEach((peserta) => {
+                peserta.jawaban = jawabanRes
+                  .filter((j) => j.id_peserta === peserta.id_peserta)
+                  .map((j) => ({
+                    benar: j.benar === 1,
+                  }));
+              });
               socket.emit("scoreboard_data", { peserta: pesertaRes });
             }
           );
         }
       }
     );
-  };
-  socket.on("get_scorebord", handleGetScore);
-  socket.on("get_scoreboard", handleGetScore);
+  });
 
-  // finish_game (server marks room selesai)
+  // Event selesai game
   socket.on("finish_game", (id_room) => {
+    // Update status room jadi selesai
     db.query(
       'UPDATE room SET status="selesai" WHERE id_room=?',
       [id_room],
       (err, res) => {
         if (!err) {
+          // Kirim notifikasi selesai hanya ke peserta room tersebut
           io.to(String(id_room)).emit("game_ended", {
             id_room: String(id_room),
             reason: "finished_by_server",
@@ -554,40 +441,45 @@ io.on("connection", (socket) => {
     );
   });
 
-  // get_score_detail
-  socket.on("get_score_detail", ({ id_room, id_peserta }) => {
+  // Event untuk mendapatkan detail skor peserta
+  socket.on("get_score_detail", async ({ id_room, id_peserta }) => {
+    // Ambil data peserta
     db.query(
       "SELECT nama_guest, skor FROM room_player WHERE id_peserta=?",
       [id_peserta],
       (err, pesertaRes) => {
-        if (err || !pesertaRes || pesertaRes.length === 0) return;
+        if (err || pesertaRes.length === 0) return;
         const nama_guest = pesertaRes[0].nama_guest;
         const skor = pesertaRes[0].skor;
 
+        // Total peserta
         db.query(
           "SELECT COUNT(*) AS total FROM room_player WHERE id_room=?",
           [id_room],
           (err2, res2) => {
-            const total_peserta = res2 && res2[0] ? res2[0].total : 0;
+            const total_peserta = res2[0].total;
 
+            // Ranking
             db.query(
               "SELECT id_peserta FROM room_player WHERE id_room=? ORDER BY skor DESC",
               [id_room],
               (err3, res3) => {
-                const ranking = res3
-                  ? res3.findIndex((p) => p.id_peserta == id_peserta) + 1
-                  : null;
+                const ranking =
+                  res3.findIndex((p) => p.id_peserta == id_peserta) + 1;
 
+                // Jawaban peserta
                 db.query(
                   "SELECT * FROM jawaban_room WHERE id_peserta=? ORDER BY id_soalmlt ASC",
                   [id_peserta],
                   (err4, jawabanRes) => {
+                    // Total benar/salah, waktu tercepat, benar beruntun
                     let total_benar = 0,
                       total_salah = 0,
                       waktu_tercepat = 30,
                       benar_beruntun = 0,
                       streak = 0;
-                    (jawabanRes || []).forEach((j) => {
+
+                    jawabanRes.forEach((j) => {
                       if (j.benar) {
                         total_benar++;
                         streak++;
@@ -600,18 +492,19 @@ io.on("connection", (socket) => {
                       if (streak > benar_beruntun) benar_beruntun = streak;
                     });
 
+                    // Total soal
                     db.query(
                       "SELECT COUNT(*) AS total FROM soal_mlt WHERE id_room=?",
                       [id_room],
                       (err5, soalRes) => {
-                        const total_soal =
-                          soalRes && soalRes[0] ? soalRes[0].total : 0;
+                        const total_soal = soalRes[0].total;
 
+                        // Review soal
                         db.query(
                           "SELECT s.*, j.jawaban AS jawaban_user, j.benar AS benar_user FROM soal_mlt s LEFT JOIN jawaban_room j ON s.id_soalmlt=j.id_soalmlt AND j.id_peserta=? WHERE s.id_room=? ORDER BY s.id_soalmlt ASC",
                           [id_peserta, id_room],
                           (err6, reviewRes) => {
-                            const review = (reviewRes || []).map((r) => ({
+                            const review = reviewRes.map((r) => ({
                               pertanyaan: r.pertanyaan,
                               jwbn_a: r.jwbn_a,
                               jwbn_b: r.jwbn_b,
@@ -648,7 +541,7 @@ io.on("connection", (socket) => {
     );
   });
 
-  // end_game - mark room selesai and broadcast; avoid forcibly disconnecting sockets
+  // Event untuk mengakhiri game dan menandai room sebagai selesai
   socket.on("end_game", (id_room) => {
     if (!id_room) {
       socket.emit("end_result", { success: false, message: "id_room missing" });
@@ -668,22 +561,35 @@ io.on("connection", (socket) => {
           return;
         }
 
+        // Broadcast ke semua socket yang sudah join room -> beri tahu game berakhir
         io.to(String(id_room)).emit("game_ended", { id_room: String(id_room) });
         socket.emit("end_result", { success: true });
 
-        // DO NOT forcibly disconnect clients here. Let clients handle game_ended and redirect/cleanup themselves.
+        // optional: disconnect semua sockets di room supaya "keluar semua sesi"
+        io.in(String(id_room))
+          .fetchSockets()
+          .then((sockets) => {
+            sockets.forEach((s) => {
+              try {
+                s.disconnect(true);
+              } catch (e) {
+                /* ignore */
+              }
+            });
+          })
+          .catch((e) => console.error("fetchSockets error:", e));
+
         console.log(
           `Room ${id_room} set to selesai and game_ended broadcasted`
         );
       }
     );
   });
-
-  socket.on("disconnect", (reason) => {
-    console.log("[disconnect]", socket.id, reason);
-  });
 });
 
-server.listen(3000, () => {
-  console.log("Socket.io server running on port 3000");
+//ini jalurnya
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
+  console.log(`Socket.io server running on port ${PORT}`);
 });
