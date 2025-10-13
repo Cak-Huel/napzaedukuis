@@ -86,6 +86,11 @@ header.navbar {
     color: white;
 }
 
+/* Sembunyikan tombol hamburger di tampilan desktop */
+.hamburger-menu {
+    display: none;
+}
+
 .level-header {
     display: flex;
     align-items: center;
@@ -150,12 +155,9 @@ header.navbar {
 .flip-card {
     background-color: transparent;
     width: 140px;
-    /* Lebar kartu */
     height: 220px;
-    /* Tinggi kartu */
     border-radius: 12px;
     perspective: 1000px;
-    /* Memberikan efek 3D */
     position: relative;
     /* Penting untuk penempatan z-index */
     transition: transform 0.6s ease-in-out, z-index 0.0s 0.6s;
@@ -235,9 +237,22 @@ header.navbar {
     /* Shadow lebih gelap agar gambar terlihat menonjol */
 }
 
+.flip-card-back .question-image {
+    max-width: 95%;
+    /* Pastikan gambar tidak melebihi lebar kartu */
+    max-height: 40%;
+    /* Batasi tinggi agar pertanyaan dan jawaban tetap terlihat */
+    height: auto;
+    margin-bottom: 8px;
+    /* Jarak antara gambar dan pertanyaan */
+    object-fit: contain;
+    /* Memastikan gambar muat tanpa terpotong */
+    border-radius: 5px;
+}
+
 .flip-card-back .question-content {
     /* Menyesuaikan konten pertanyaan agar pas di dalam kartu */
-    padding: 0;
+    padding: 5px;
     width: 100%;
     height: 100%;
     display: flex;
@@ -247,6 +262,7 @@ header.navbar {
     font-size: 10px;
     /* Sesuaikan ukuran font agar tulisan muat */
     text-align: left;
+    overflow-y: auto;
 }
 
 .flip-card-back h3 {
@@ -323,9 +339,7 @@ header.navbar {
 
 /* --- OVERLAY UNTUK MENUTUP SELURUH LAYAR --- */
 
-.card-container::before {
-    content: '';
-    /* Wajib ada untuk elemen ::before */
+#game-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -342,7 +356,8 @@ header.navbar {
 }
 
 /* Terapkan overlay saat card-container memiliki class 'has-focus' */
-.card-container.has-focus::before {
+/* Menggunakan selector sibling (~) karena #game-overlay berada setelah .card-container */
+.card-container.has-focus~#game-overlay {
     background-color: rgba(0, 0, 0, 0.75);
     /* Hitam transparan (75% opacity) */
     opacity: 1;

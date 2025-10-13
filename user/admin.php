@@ -32,9 +32,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   </nav>
   <main>
     <?php
-    $menu = isset($_GET['menu']) ? $_GET['menu'] : 'pertanyaan';
-    if ($menu === 'pertanyaan') {
-      include '../soal/form.php';
+     $menu = isset($_GET['menu']) ? $_GET['menu'] : 'pertanyaan';
+    $id_soal = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+    if ($menu === 'edit' && $id_soal > 0) {
+      // Jika ada ID soal, tampilkan form edit
+      include '../soal/form.php'; 
+    } elseif ($menu === 'pertanyaan') {
+      // Jika menu pertanyaan, tampilkan daftar soal
+      include 'daftar_soal.php'; // FILE BARU: Tampilkan Daftar Soal & Form Tambah
     } elseif ($menu === 'laporan') {
       echo "<h2>Halaman laporan belum tersedia.</h2>";
     }

@@ -34,8 +34,19 @@
       <button class="answer-btn"></button>
       <button class="answer-btn"></button>
     </div>
-
-    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <!-- Pusher JS -->
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script src="gameroom.js"></script>
+
+
+    <script>
+      // Aktifkan logging ke console untuk debugging (opsional, hapus saat produksi)
+      Pusher.logToConsole = true;
+
+      // Buat koneksi ke Pusher
+      var pusher = new Pusher('gggvgvg55451', { // Ganti dengan App Key Anda
+          cluster: 'ap1' // Ganti dengan cluster Anda
+      });
+  </script>
   </body>
 </html>

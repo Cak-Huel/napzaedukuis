@@ -17,7 +17,7 @@ label {
 }
 
 textarea {
-    width: 100%;
+    width: 96%;
     min-height: 100px;
     padding: 12px;
     font-size: 16px;
@@ -26,7 +26,33 @@ textarea {
     resize: vertical;
 }
 
+/* --- CSS untuk Input File Gambar (input-file) --- */
+.input-file {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    box-sizing: border-box;
+    /* Pastikan padding tidak menambah lebar */
+}
+
+/* Penyesuaian agar tampilan input file lebih rapi */
+.input-file::-webkit-file-upload-button {
+    background: #e0e0e0;
+    color: #333;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.input-file:hover::-webkit-file-upload-button {
+    background: #ccc;
+}
+
 .answers {
+    width: 97%;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;

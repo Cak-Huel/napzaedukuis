@@ -49,6 +49,10 @@ body {
     color: #1f8dff;
 }
 
+.hamburger-menu {
+    display: none;
+}
+
 .navbar .navbar-nav .btn-login,
 .navbar .navbar-nav .btn-profile {
     font-family: Brush Script MT, Cursive, sans-serif;

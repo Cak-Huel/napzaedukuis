@@ -1,6 +1,19 @@
 <?php
 include '../sekret.php';
 
+$mode = 'tambah';
+$current_soal = null;
+
+if (isset($_GET['id']) && $conn) {
+    $id_soal_edit = intval($_GET['id']);
+    $result = mysqli_query($conn, "SELECT * FROM soal WHERE id_soal = $id_soal_edit");
+    
+    if ($result && mysqli_num_rows($result) > 0) {
+        $current_soal = mysqli_fetch_assoc($result);
+        $mode = 'edit';
+    }
+}
+
 // Ambil jumlah soal per level
 $level_soal = [];
 $query = mysqli_query($conn, "SELECT lvl, COUNT(*) as jumlah FROM soal GROUP BY lvl");
@@ -25,16 +38,24 @@ $maxQuestions = 5;
   </head>
   <body>
     <div class="container">
-      <h1 class="h1">Input Soal - Mode Solo</h1>
+      <h1 class="h1"><?= $mode === 'edit' ? 'Edit Soal Lvl: ' . $current_soal['lvl'] : 'Input Soal Baru' ?> - Mode Solo</h1>
 
-      <form action="../soal/proses_soal.php" method="POST">
-        <label for="question">Pertanyaan</label>
-        <textarea
-          id="question"
-          name="pertanyaan"
-          placeholder="Tulis pertanyaan di sini..."
-          required
-        ></textarea>
+      <form action="<?= $mode === 'edit' ? '../soal/update_soal.php' : '../soal/proses_soal.php' ?>" method="POST" enctype="multipart/form-data">
+
+          <?php if ($mode === 'edit'): ?>
+              <input type="hidden" name="id" value="<?= $current_soal['id_soal'] ?>">
+          <?php endif; ?>
+
+          <label for="question">Pertanyaan</label>
+          <textarea
+              id="question"
+              name="pertanyaan"
+              placeholder="Tulis pertanyaan di sini..."
+              required
+          ><?= $mode === 'edit' ? htmlspecialchars($current_soal['pertanyaan']) : '' ?></textarea>
+
+        <label for="image">Gambar (opsional)</label>
+        <input type="file" id="image" name="gambar" accept="image/*" class="input-file" />
 
         <div class="answers">
           <div class="answer-item">
@@ -45,6 +66,7 @@ $maxQuestions = 5;
               name="jwbn_a"
               placeholder="Masukkan jawaban A"
               required
+              value="<?= $mode === 'edit' ? htmlspecialchars($current_soal['jwbn_a']) : '' ?>"
             />
           </div>
           <div class="answer-item">
@@ -55,6 +77,7 @@ $maxQuestions = 5;
               name="jwbn_b"
               placeholder="Masukkan jawaban B"
               required
+              value="<?= $mode === 'edit' ? htmlspecialchars($current_soal['jwbn_b']) : '' ?>"
             />
           </div>
           <div class="answer-item">
@@ -65,6 +88,7 @@ $maxQuestions = 5;
               name="jwbn_c"
               placeholder="Masukkan jawaban C"
               required
+              value="<?= $mode === 'edit' ? htmlspecialchars($current_soal['jwbn_c']) : '' ?>"
             />
           </div>
           <div class="answer-item">
@@ -75,17 +99,19 @@ $maxQuestions = 5;
               name="jwbn_d"
               placeholder="Masukkan jawaban D"
               required
+              value="<?= $mode === 'edit' ? htmlspecialchars($current_soal['jwbn_d']) : '' ?>"
             />
           </div>
         </div>
 
         <label for="correct">Jawaban Benar</label>
         <select id="correct" name="jwbn_bnr" required>
-          <option value="">-- Pilih Jawaban Benar --</option>
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-          <option value="D">D</option>
+            <option value="">-- Pilih Jawaban Benar --</option>
+            <?php 
+            $selected_jwbn = $mode === 'edit' ? $current_soal['jwbn_bnr'] : '';
+            foreach (['A', 'B', 'C', 'D'] as $opt): ?>
+                <option value="<?= $opt ?>" <?= ($opt === $selected_jwbn) ? 'selected' : '' ?>><?= $opt ?></option>
+            <?php endforeach; ?>
         </select>
 
         <label for="level">Level</label>

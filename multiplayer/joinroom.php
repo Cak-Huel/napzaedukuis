@@ -102,7 +102,18 @@ session_start();
       <p>@2025 Napza Edu card</p>
     </footer>
     <script src="../modal.js"></script>
-    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <!-- Pusher JS -->
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script src="joinroom.js"></script>
+
+    <script>
+      // Aktifkan logging ke console untuk debugging (opsional, hapus saat produksi)
+      Pusher.logToConsole = true;
+
+      // Buat koneksi ke Pusher
+      var pusher = new Pusher('kmkmkmm545454', { // Ganti dengan App Key Anda
+          cluster: 'ap1' // Ganti dengan cluster Anda
+      });
+  </script>
   </body>
 </html>

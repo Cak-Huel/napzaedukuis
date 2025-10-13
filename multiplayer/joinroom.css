@@ -49,6 +49,10 @@ body {
     color: #1f8dff;
 }
 
+.hamburger-menu {
+    display: none;
+}
+
 .navbar .btn-profile,
 .navbar .btn-login {
     background: white;

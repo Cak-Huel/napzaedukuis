@@ -63,3 +63,61 @@ h2 {
   color: #2196f3;
   margin-top: 0;
 }
+
+/* --- CSS untuk Daftar Soal --- */
+
+main {
+  padding: 20px;
+}
+
+h3 {
+  margin-top: 30px;
+  margin-bottom: 15px;
+}
+
+.soal-list-container {
+  overflow-x: auto;
+  /* Agar tabel bisa discroll di layar kecil */
+}
+
+.soal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.soal-table th,
+.soal-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.soal-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* Gaya Tombol Aksi */
+.btn-aksi {
+  padding: 5px 10px;
+  margin: 2px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.btn-edit {
+  background-color: #ffc107;
+  /* Kuning */
+  color: #333;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  /* Merah */
+  color: white;
+}

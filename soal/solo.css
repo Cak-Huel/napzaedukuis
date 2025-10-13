@@ -69,6 +69,10 @@ header {
     color: #1f8dff;
 }
 
+.hamburger-menu {
+    display: none;
+}
+
 .btn-profil {
     font-family: inherit;
     font-size: 1rem;
@@ -290,12 +294,36 @@ header {
     margin-top: 10px;
 }
 
+.reset-container {
+    text-align: center;
+    margin: 30px 0;
+    padding: 10px;
+}
+
+.reset-btn {
+    background-color: #dc3545;
+    /* Merah untuk menunjukkan aksi penghapusan */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reset-btn:hover {
+    background-color: #c82333;
+    /* Merah lebih gelap saat di-hover */
+}
+
+
 /* Footer */
 footer {
     background-color: #d9d9d9;
     text-align: center;
     padding: 10px 0;
-    position: fixed;
     left: 0;
     bottom: 0;
     width: 100vw;
@@ -414,5 +442,11 @@ footer {
         position: sticky;
         font-size: 0.85rem;
         padding: 6px 0;
+    }
+}
+
+@media (max-width: 600px) {
+    footer {
+        position: relative;
     }
 }

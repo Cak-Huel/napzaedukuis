@@ -113,9 +113,56 @@ if (isset($_SESSION['id_user'])) {
 </div>
 <!-- End Modal Dialog -->
 
+<div class="reset-container">
+        <button id="reset-progress-btn" class="reset-btn">
+            Reset Progress Level
+        </button>
+      </div>
+      
+          <button id="nextLevel" style="display: none;" onclick="window.location='levelgame.php?level=<?php echo $level+1; ?>'">
+            Lanjut ke Level Berikutnya
+            </button>
+
     <footer>
       <p>@2025 Napza Edu card</p>
     </footer>
+      
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const resetBtn = document.getElementById('reset-progress-btn');
+            
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    // Konfirmasi dari pengguna
+                    const confirmation = confirm("PERINGATAN: Apakah Anda yakin ingin mereset semua progress level Anda? Tindakan ini tidak dapat dibatalkan!");
+                    
+                    if (confirmation) {
+                        // Lakukan request AJAX ke reset_progress.php
+                        fetch('reset_progres.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                alert(data.message);
+                                // Muat ulang halaman untuk menampilkan level 1 yang aktif
+                                window.location.reload(); 
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Terjadi kesalahan koneksi.');
+                        });
+                    }
+                });
+            }
+        });
+      </script>
 
     <script src="../modal.js"></script>
   </body>

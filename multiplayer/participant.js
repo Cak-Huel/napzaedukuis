@@ -1,105 +1,126 @@
-const socket = io("http://localhost:3000", { transports: ["websocket"] });
-
 document.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
   const id_room = urlParams.get("id_room");
+
+  // Sesuaikan selektor dengan HTML di participant.php
   const codeEl = document.querySelector(".room-box h1");
-  const namesEl = document.querySelector(".participants .names");
-  const startBtn = document.querySelector(".start");
+  const participantListEl = document.getElementById("participant-list");
+  const totalPesertaEl = document.getElementById("total-peserta");
+  const startBtn = document.getElementById("start-game-btn");
 
   if (!id_room) {
     console.error("participant: id_room tidak ditemukan di URL");
+    alert("Error: ID Room tidak ditemukan. Silakan kembali dan coba lagi.");
     return;
   }
 
+  // Fungsi untuk merender daftar peserta
   function renderPlayers(names = []) {
-    namesEl.innerHTML = "";
+    participantListEl.innerHTML = "";
     if (!names.length) {
-      namesEl.textContent = "Belum ada peserta.";
-      return;
+      const li = document.createElement("li");
+      li.textContent = "Belum ada peserta yang bergabung.";
+      participantListEl.appendChild(li);
+    } else {
+      names.forEach((n) => {
+        const li = document.createElement("li");
+        li.textContent = n;
+        participantListEl.appendChild(li);
+      });
     }
-    names.forEach((n) => {
-      const d = document.createElement("div");
-      d.textContent = n;
-      namesEl.appendChild(d);
-    });
+    // Update jumlah peserta
+    if (totalPesertaEl) {
+      totalPesertaEl.textContent = names.length;
+    }
   }
 
-  socket.on("connect", () => {
-    console.log("participant connected", socket.id);
-    console.log(
-      "participant will request get_room_info_by_id with id_room:",
-      id_room
+  // --- Logika Pusher ---
+
+  // Inisialisasi Pusher (pastikan variabel 'pusher' sudah ada dari file PHP)
+  if (typeof Pusher === "undefined") {
+    console.error(
+      "Pusher JS tidak ditemukan. Pastikan sudah di-include di halaman HTML."
     );
-    socket.emit("get_room_info_by_id", id_room);
-  });
+    return;
+  }
 
-  // refresh berkala untuk memastikan daftar peserta up-to-date
-  const updater = setInterval(() => {
-    if (socket.connected) socket.emit("get_room_info_by_id", id_room);
-  }, 2000);
+  // Subscribe ke channel room yang spesifik
+  const channelName = `private-quiz-${id_room}`;
+  const channel = pusher.subscribe(channelName);
 
-  socket.on("room_info", (data) => {
-    console.log("Data room_info dari server:", data);
-    if (!data || !data.success) return;
-    // tampilkan kode room
-    if (codeEl) codeEl.textContent = data.kode_room || "";
-    // simpan id_room global untuk debug/compatibilitas
-    window.id_room = data.id_room;
-    // tampilkan peserta
-    renderPlayers(Array.isArray(data.peserta) ? data.peserta : []);
-  });
-
-  // author klik Mulai -> server kirim start_result ke pengklik
-  socket.on("start_result", (data) => {
-    console.log("start_result:", data);
-    if (data && data.success) {
-      // author redirect ke scoreboard (halaman guru)
-      window.location.href = `scorebord.php?id_room=${encodeURIComponent(
-        id_room
-      )}`;
-    } else {
-      alert("Gagal memulai permainan!");
-      if (startBtn) {
-        startBtn.disabled = false;
-        startBtn.textContent = "Mulai";
-      }
+  // Bind ke event 'participant-joined' untuk update daftar peserta secara real-time
+  channel.bind("participant-joined", function (data) {
+    console.log("Event participant-joined diterima:", data);
+    if (data.nama_guest) {
+      addParticipantToList(data.nama_guest);
+      updateParticipantCount();
     }
   });
 
-  // peserta di waiting_room akan menerima broadcast game_started -> pindah ke gameroom
-  socket.on("game_started", (data) => {
-    console.log("game_started:", data);
-    if (data && String(data.id_room) === String(id_room)) {
-      const url = `gameroom.php?id_room=${encodeURIComponent(
-        id_room
-      )}&id_peserta=${encodeURIComponent("")}`;
-      setTimeout(() => (window.location.href = url), 150);
-    }
-  });
-
-  // peserta menerima notifikasi game berakhir
-  socket.on("game_ended", (data) => {
+  // Bind ke event 'game-ended' dari host
+  channel.bind("game-ended", function (data) {
     console.log("participant received game_ended", data);
     alert("Permainan diakhiri oleh host.");
     window.location.href = "selection.php";
   });
 
-  if (startBtn) {
-    startBtn.addEventListener("click", () => {
-      startBtn.disabled = true;
-      startBtn.textContent = "Memulai...";
-      socket.emit("start_game", id_room);
-    });
+  // --- Logika Fetch untuk interaksi dengan server ---
+
+  // 1. Ambil data awal saat halaman dimuat
+  async function getInitialRoomData() {
+    try {
+      const response = await fetch(`get_room_details.php?id_room=${id_room}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.success) {
+        if (codeEl) codeEl.textContent = data.kode_room || "";
+        renderPlayers(data.peserta || []);
+      } else {
+        throw new Error(data.message || "Gagal mengambil data room.");
+      }
+    } catch (error) {
+      console.error("Gagal mengambil data awal room:", error);
+      alert("Gagal memuat informasi room. Silakan coba lagi.");
+    }
   }
 
-  socket.on("connect_error", (err) => {
-    console.error("participant connect_error:", err);
-  });
+  // 2. Fungsi untuk memulai game saat tombol diklik
+  async function startGame() {
+    if (!startBtn) return;
+    startBtn.disabled = true;
+    startBtn.textContent = "Memulai...";
 
-  socket.on("disconnect", (reason) => {
-    console.warn("participant disconnected:", reason);
-  });
+    try {
+      const response = await fetch("start_game_trigger.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `id_room=${id_room}`,
+      });
 
-  window.addEventListener("beforeunload", () => clearInterval(updater));
+      const result = await response.json();
+      if (response.ok && result.success) {
+        // Redirect host ke halaman scoreboard
+        window.location.href = `scorebord.php?id_room=${encodeURIComponent(
+          id_room
+        )}`;
+      } else {
+        throw new Error(result.message || "Gagal memulai permainan di server.");
+      }
+    } catch (error) {
+      console.error("Error saat memulai game:", error);
+      alert(`Gagal memulai permainan: ${error.message}`);
+      startBtn.disabled = false;
+      startBtn.textContent = "Mulai Game";
+    }
+  }
+
+  // Tambahkan event listener ke tombol start
+  if (startBtn) {
+    startBtn.addEventListener("click", startGame);
+  }
+
+  // Panggil fungsi untuk memuat data awal
+  getInitialRoomData();
 });

@@ -4,6 +4,7 @@ let skor = 0;
 let timer = 30;
 let timerInterval;
 let totalDijawab = 0;
+let activeCardIndex = -1; // Menyimpan index kartu yang sedang di-flip
 
 const skorDisplay = document.getElementById("skor");
 const timerDisplay = document.getElementById("timer");
@@ -43,6 +44,9 @@ function setupCards() {
 // FUNGSI BARU: Menggantikan showQuestion lama dan mengurus animasi flip
 function flipCard(cardContainer, index) {
   const soal = soalList[index];
+  const imageHTML = soal.gambar
+    ? `<img src="../soal/${soal.gambar}" alt="Gambar Soal" class="question-image"/>`
+    : "";
   // Tambahkan kondisi untuk menghindari flip jika sudah dijawab
   if (!soal || cardContainer.classList.contains("answered")) return;
 
@@ -51,12 +55,14 @@ function flipCard(cardContainer, index) {
   cardContainers.forEach((c) => c.classList.remove("is-focused"));
   cardContainer.classList.add("is-focused");
   if (cardContainerMain) cardContainerMain.classList.add("has-focus"); // Tambah kelas ke kontainer utama
+  activeCardIndex = index;
 
   // 2. Isi konten pertanyaan ke sisi belakang kartu (tetap sama)
   const cardInner = cardContainer.querySelector(".flip-card-inner");
   const cardBack = cardContainer.querySelector(".flip-card-back");
   cardBack.innerHTML = `
         <div class="question-content">
+         ${imageHTML}
             <h3 id="q-title-${index}">${soal.pertanyaan}</h3>
             <div id="q-options-${index}" class="options">
                 <button class="answer-btn" data-jawaban-pilih="A">${soal.a}</button>
@@ -132,18 +138,19 @@ function pilihJawaban(btn, jawabanBenar, jawabanPilih, index) {
 }
 
 // MENGUBAH: Fungsi closeQuestion sekarang memutar kartu kembali dan menghilangkan fokus
-function closeQuestion(index, benar) {
-  totalDijawab++;
+function closeQuestion(index, benar, forfeit) {
+  {
+    totalDijawab++;
 
-  const cardContainer = cardContainers[index];
-  const cardInner = cardContainer.querySelector(".flip-card-inner");
-  const cardFront = cardContainer.querySelector(".flip-card-front");
+    const cardContainer = cardContainers[index];
+    const cardInner = cardContainer.querySelector(".flip-card-inner");
+    const cardFront = cardContainer.querySelector(".flip-card-front");
 
-  // TANDAI KARTU SUDAH DIJAWAB
-  cardContainer.classList.add("answered");
+    // TANDAI KARTU SUDAH DIJAWAB
+    cardContainer.classList.add("answered");
 
-  // TAMPILKAN HASIL PADA SISI DEPAN KARTU
-  cardFront.innerHTML = `
+    // TAMPILKAN HASIL PADA SISI DEPAN KARTU
+    cardFront.innerHTML = `
         <div style="
             display: flex; 
             justify-content: center; 
@@ -157,6 +164,10 @@ function closeQuestion(index, benar) {
             ${benar ? "✔️" : "❌"}
         </div>
     `;
+  }
+
+  const cardContainer = cardContainers[index];
+  const cardInner = cardContainer.querySelector(".flip-card-inner");
 
   // 1. PUTAR KEMBALI KARTU
   setTimeout(() => {
@@ -165,6 +176,7 @@ function closeQuestion(index, benar) {
 
   // 2. HILANGKAN FOKUS
   setTimeout(() => {
+    activeCardIndex = -1;
     cardContainer.classList.remove("is-focused");
     if (cardContainerMain) cardContainerMain.classList.remove("has-focus");
   }, 1100); // setelah animasi selesai

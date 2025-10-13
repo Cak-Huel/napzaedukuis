@@ -44,8 +44,18 @@
         </table>
       </div>
     </main>
-
-    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <!-- Pusher JS -->
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script src="scorebord.js"></script>
+
+    <script>
+      // Aktifkan logging ke console untuk debugging (opsional, hapus saat produksi)
+      Pusher.logToConsole = true;
+
+      // Buat koneksi ke Pusher
+      var pusher = new Pusher('kmkmkmkmknjnj545', { // Ganti dengan App Key Anda
+          cluster: 'ap1' // Ganti dengan cluster Anda
+      });
+  </script>
   </body>
 </html>

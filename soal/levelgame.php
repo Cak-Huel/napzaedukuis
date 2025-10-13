@@ -159,6 +159,9 @@ $level = isset($_GET['level']) ? intval($_GET['level']) : 1;
         </div>
     </div>
     </main>
+    <!-- End Kartu-kartu permainan -->
+
+    <div id="game-overlay"></div>
     <!-- Petunjuk -->
     <p class="instruction">Klik kartu untuk melihat dan menjawab pertanyaan</p>
 

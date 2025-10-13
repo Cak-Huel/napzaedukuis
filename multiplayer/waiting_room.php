@@ -17,8 +17,6 @@
         .start-btn { display: block; width: 100%; padding: 10px; background: #28a745; color: #fff; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 20px; }
         .start-btn:disabled { background: #aaa; }
     </style>
-    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
-    <script src="waiting_room.js"></script>
 </head>
 <body>
     <div class="container">
@@ -28,5 +26,18 @@
             <!-- Daftar pemain akan diisi oleh JS -->
         </ul>
     </div>
+    <!-- Pusher JS -->
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script src="waiting_room.js"></script>
+
+    <script>
+      // Aktifkan logging ke console untuk debugging (opsional, hapus saat produksi)
+      Pusher.logToConsole = true;
+
+      // Buat koneksi ke Pusher
+      var pusher = new Pusher('hbhbhbbnnk54584', { // Ganti dengan App Key Anda
+          cluster: 'ap1' // Ganti dengan cluster Anda
+      });
+  </script>
 </body>
 </html>

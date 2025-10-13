@@ -1,5 +1,3 @@
-const socket = io("http://localhost:3000", { transports: ["websocket"] });
-
 document.addEventListener("DOMContentLoaded", () => {
   const kodeEl = document.getElementById("kode_room");
   const namaEl = document.getElementById("nama_guest");
@@ -25,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnJoin.textContent = busy ? "Menghubungkan..." : "Join";
   }
 
-  function doJoin(e) {
+  async function doJoin(e) {
     if (e) e.preventDefault();
     showError("");
 
@@ -44,7 +42,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     setButtonBusy(true);
-    socket.emit("join_room", { kode_room: kode, nama_guest: nama });
+
+    try {
+      const formData = new FormData();
+      formData.append("kode_room", kode);
+      formData.append("nama_guest", nama);
+
+      const response = await fetch("join_room_trigger.php", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Redirect ke waiting room dengan id_room dan id_peserta dari server
+        const id_room = encodeURIComponent(data.id_room);
+        const id_peserta = encodeURIComponent(data.id_peserta);
+        window.location.href = `waiting_room.php?id_room=${id_room}&id_peserta=${id_peserta}`;
+      } else {
+        throw new Error(data.message || "Gagal bergabung dengan room.");
+      }
+    } catch (error) {
+      showError(error.message);
+      console.error("Join room error:", error);
+    } finally {
+      setButtonBusy(false);
+    }
   }
 
   // klik tombol
@@ -56,33 +80,4 @@ document.addEventListener("DOMContentLoaded", () => {
       if (ev.key === "Enter") doJoin(ev);
     })
   );
-
-  // balasan server
-  socket.on("join_result", (data) => {
-    setButtonBusy(false);
-    if (data && data.success) {
-      // redirect ke waiting room dengan id_room dan id_peserta dari server
-      const id_room = encodeURIComponent(data.id_room);
-      const id_peserta = encodeURIComponent(data.id_peserta);
-      window.location.href = `waiting_room.php?id_room=${id_room}&id_peserta=${id_peserta}`;
-    } else {
-      showError(
-        (data && data.message) ||
-          "Gagal join room. Periksa kode atau coba lagi."
-      );
-    }
-  });
-
-  socket.on("connect_error", (err) => {
-    setButtonBusy(false);
-    showError("Gagal terhubung ke server WebSocket.");
-    console.error("socket connect_error:", err);
-  });
-
-  socket.on("disconnect", (reason) => {
-    // jika disconnect tiba2, beri tahu user
-    if (reason !== "io client disconnect") {
-      showError("Terputus dari server.");
-    }
-  });
 });

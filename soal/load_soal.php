@@ -8,7 +8,7 @@ if (!isset($_GET['level'])) {
 }
 
 $level = intval($_GET['level']);
-$query = mysqli_query($conn, "SELECT * FROM soal WHERE lvl = $level LIMIT 5");
+$query = mysqli_query($conn, "SELECT id_soal, pertanyaan, jwbn_a, jwbn_b, jwbn_c, jwbn_d, jwbn_bnr, gambar FROM soal WHERE lvl = $level LIMIT 5");
 
 $soal = [];
 while ($row = mysqli_fetch_assoc($query)) {
@@ -19,7 +19,8 @@ while ($row = mysqli_fetch_assoc($query)) {
     'b' => $row['jwbn_b'],
     'c' => $row['jwbn_c'],
     'd' => $row['jwbn_d'],
-    'jawaban' => $row['jwbn_bnr']
+    'jawaban' => $row['jwbn_bnr'],
+    'gambar' => $row['gambar']
   ];
 }
 

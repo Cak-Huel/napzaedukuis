@@ -58,8 +58,22 @@
       <!-- Review Soal -->
       <div class="review-section"></div>
     </div>
-
-    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <!-- Pusher JS (opsional di halaman ini, tapi tidak apa-apa jika ada) -->
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script src="score.js"></script>
+
+    <script>
+      // Aktifkan logging ke console untuk debugging (opsional, hapus saat produksi)
+      Pusher.logToConsole = true;
+
+      // Buat koneksi ke Pusher
+      var pusher = new Pusher('hvgfxdxfcgvhbj525', { // Ganti dengan App Key Anda
+          cluster: 'ap1', // Ganti dengan cluster Anda
+           channelAuthorization: {
+              endpoint: 'pusher_auth.php',
+              transport: 'ajax'
+          }
+      });
+  </script>
   </body>
 </html>
