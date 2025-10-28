@@ -116,14 +116,36 @@ $maxQuestions = 5;
 
         <label for="level">Level</label>
         <select id="level" name="lvl" required>
-          <option value="">-- Pilih Level --</option>
-          <?php for ($i = 1; $i <= $total_level; $i++): 
-            $jumlah = isset($level_soal[$i]) ? $level_soal[$i] : 0;
-            $disabled = $jumlah >= $maxQuestions ? 'disabled' : '';
-            $label = "Level $i" . ($disabled ? " (Penuh)" : "");
-          ?>
-            <option value="<?= $i ?>" <?= $disabled ?>><?= $label ?></option>
-          <?php endfor; ?>
+            <option value="">-- Pilih Level --</option>
+            <?php 
+            for ($i = 1; $i <= $total_level; $i++):
+                $jumlah = isset($level_soal[$i]) ? $level_soal[$i] : 0;
+                
+                // --- LOGIKA BARU DIMULAI DI SINI ---
+                
+                // 1. Cek kondisi disabled
+                $is_disabled = false;
+                if ($jumlah >= $maxQuestions) {
+                    // Level penuh, tapi apakah kita sedang edit dan ini level aslinya?
+                    if ($mode === 'edit' && $current_soal['lvl'] == $i) {
+                        $is_disabled = false; // Jika ya, JANGAN disable
+                    } else {
+                        $is_disabled = true; // Jika tidak, disable
+                    }
+                }
+
+                // 2. Cek kondisi selected
+                $is_selected = ($mode === 'edit' && $current_soal['lvl'] == $i);
+
+                // 3. Siapkan atribut untuk HTML
+                $disabled_attr = $is_disabled ? 'disabled' : '';
+                $selected_attr = $is_selected ? 'selected' : '';
+                $label = "Level $i" . ($is_disabled ? " (Penuh)" : " ($jumlah/$maxQuestions)");
+            ?>
+                <option value="<?= $i ?>" <?= $disabled_attr ?> <?= $selected_attr ?>>
+                    <?= $label ?>
+                </option>
+            <?php endfor; ?>
         </select>
 
         <button type="submit">Simpan</button>

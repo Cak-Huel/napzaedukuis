@@ -50,7 +50,7 @@ body {
 }
 
 .navbar .navbar-nav .btn-login {
-    font-family: Brush Script MT, Cursive, sans-serif;
+    font-family: "Comic Neue", cursive;
     background-color: white;
     border: none;
     border-radius: 15px;
@@ -70,7 +70,7 @@ body {
 }
 
 .navbar .navbar-nav .btn-profile {
-    font-family: Brush Script MT, Cursive, sans-serif;
+    font-family: "Comic Neue", cursive;
     background-color: white;
     border: none;
     border-radius: 15px;

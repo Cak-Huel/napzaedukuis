@@ -5,6 +5,7 @@ session_start();
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // 1. Ambil ID Soal dan Sanitasi Data
     $id_soal = isset($_POST['id']) ? intval($_POST['id']) : 0;
+    
     if ($id_soal === 0) {
         echo "<script>alert('Error: ID Soal tidak ditemukan.'); window.history.back();</script>";
         exit;

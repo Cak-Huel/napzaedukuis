@@ -1,219 +1,328 @@
-let currentIndex = 0;
-let soalList = [];
-let skor = 0;
-let timer = 30;
-let timerInterval;
-let totalDijawab = 0;
-let activeCardIndex = -1; // Menyimpan index kartu yang sedang di-flip
+// --- 1. MEMBACA DATA DARI HTML ---
+const dataElement = document.getElementById("quiz-data");
+const quizData = JSON.parse(dataElement.textContent);
 
-const skorDisplay = document.getElementById("skor");
-const timerDisplay = document.getElementById("timer");
-// Variabel lama questionBox dan cards dihapus atau diubah
-const nextLevelBtn = document.getElementById("nextLevel");
+// --- 2. SELEKTOR DOM ---
+const cards = document.querySelectorAll(".card");
+const pageOverlay = document.getElementById("page-overlay");
+const timerEl = document.getElementById("timer");
+const pointsEl = document.getElementById("points");
+const levelEl = document.getElementById("level");
 
-// MENGUBAH: Selektor kartu disesuaikan ke elemen kontainer flip-card
-const cardContainers = document.querySelectorAll(".flip-card");
-const cardContainerMain = document.querySelector(".card-container"); // Tambahkan ini
+// Modal
+const modalOverlay = document.getElementById("completion-modal-overlay");
+const modalScoreEl = document.getElementById("modal-score");
+const nextLevelBtn = document.getElementById("next-level-btn");
 
-function startGame() {
-  const level = new URLSearchParams(window.location.search).get("level") || 1;
+// --- 3. STATUS GAME (STATE) ---
+let points = 0;
+let level = parseInt(levelEl.textContent) || 1;
+let timeLeft = 40; // Sesuai dengan tampilan awal di HTML
+let timerInterval = null;
+let activeCard = null; // Kartu yang sedang dibuka
+let answeredCards = 0; // Menghitung jumlah kartu yang sudah dijawab
 
-  fetch(`load_soal.php?level=${level}`)
-    .then((res) => res.json())
-    .then((data) => {
-      soalList = data;
-      // Memanggil fungsi untuk mengatur event listener pada kartu
-      setupCards();
-    });
-}
+// --- 4. FUNGSI UTAMA ---
 
-// MENGUBAH: Fungsi setupCards sekarang hanya menambahkan event listener ke kontainer luar
-function setupCards() {
-  cardContainers.forEach((container, index) => {
-    // Menambahkan event listener ke seluruh kontainer kartu
-    container.addEventListener("click", () => {
-      // Pastikan kartu belum dijawab atau sedang dalam proses
-      if (container.classList.contains("answered")) return;
+/**
+ * Memulai permainan saat halaman dimuat
+ */
+function initializeGame() {
+  updateScoreboard();
+  resetTimer();
 
-      // Memicu fungsi flipCard (memutar dan mengisi pertanyaan)
-      flipCard(container, index);
-    });
+  // Tambahkan event listener ke setiap kartu
+  cards.forEach((card) => {
+    card.addEventListener("click", () => handleCardClick(card));
   });
+
+  // Event listener untuk overlay (menutup kartu)
+  pageOverlay.addEventListener("click", closeActiveCard);
+
+  // Event listener untuk tombol next level (me-reset game)
+  nextLevelBtn.addEventListener("click", goToNextLevel);
 }
 
-// FUNGSI BARU: Menggantikan showQuestion lama dan mengurus animasi flip
-function flipCard(cardContainer, index) {
-  const soal = soalList[index];
-  const imageHTML = soal.gambar
-    ? `<img src="../soal/${soal.gambar}" alt="Gambar Soal" class="question-image"/>`
+/**
+ * Menangani logika saat kartu diklik
+ */
+function handleCardClick(card) {
+  // Jangan lakukan apa-apa jika kartu sudah dijawab atau kartu lain sedang aktif
+  if (
+    card.classList.contains("is-correct") ||
+    card.classList.contains("is-wrong") ||
+    activeCard
+  ) {
+    return;
+  }
+
+  activeCard = card;
+
+  // 1. Ambil data kuis berdasarkan data-id kartu
+  const cardId = card.dataset.id;
+  const data = quizData.find((q) => q.id == cardId);
+
+  // 2. Isi konten di belakang kartu
+  populateCardBack(card, data);
+
+  // 3. Tambahkan kelas untuk animasi
+  card.classList.add("is-flipped", "is-active");
+  pageOverlay.classList.add("visible");
+
+  // 4. Mulai timer
+  startTimer();
+}
+
+/**
+ * Mengisi HTML di bagian belakang kartu dengan data kuis
+ */
+function populateCardBack(card, data) {
+  const cardBack = card.querySelector(".card-back");
+
+  // Buat HTML untuk pilihan ganda
+  const optionLetters = ["A", "B", "C", "D"];
+  const optionsHTML = data.options
+    .map(
+      (option, index) =>
+        `<button class="option-btn" data-option="${optionLetters[index]}">${option}</button>`
+    )
+    .join("");
+
+  // Menangani jika path gambar NULL dari database
+  const imageHTML = data.image
+    ? `<img src="soal/${data.image}" alt="Petunjuk Kuis" class="card-back-image">`
     : "";
-  // Tambahkan kondisi untuk menghindari flip jika sudah dijawab
-  if (!soal || cardContainer.classList.contains("answered")) return;
 
-  // 1. TAMBAH KELAS FOKUS
-  // Hapus fokus dari kartu lain jika ada, lalu tambahkan pada kartu saat ini
-  cardContainers.forEach((c) => c.classList.remove("is-focused"));
-  cardContainer.classList.add("is-focused");
-  if (cardContainerMain) cardContainerMain.classList.add("has-focus"); // Tambah kelas ke kontainer utama
-  activeCardIndex = index;
-
-  // 2. Isi konten pertanyaan ke sisi belakang kartu (tetap sama)
-  const cardInner = cardContainer.querySelector(".flip-card-inner");
-  const cardBack = cardContainer.querySelector(".flip-card-back");
   cardBack.innerHTML = `
-        <div class="question-content">
-         ${imageHTML}
-            <h3 id="q-title-${index}">${soal.pertanyaan}</h3>
-            <div id="q-options-${index}" class="options">
-                <button class="answer-btn" data-jawaban-pilih="A">${soal.a}</button>
-                <button class="answer-btn" data-jawaban-pilih="B">${soal.b}</button>
-                <button class="answer-btn" data-jawaban-pilih="C">${soal.c}</button>
-                <button class="answer-btn" data-jawaban-pilih="D">${soal.d}</button>
-            </div>
+        <button class="close-btn" aria-label="Tutup">X</button>
+        ${imageHTML}
+        <div class="card-content-wrapper">
+        <h3 class="card-back-question">${data.question}</h3>
+        <div class="options-list">
+            ${optionsHTML}
         </div>
+    </div>
     `;
 
-  // 3. Tambahkan event listener untuk tombol jawaban yang baru dibuat
-  const answerButtons = cardBack.querySelectorAll(".answer-btn");
-  answerButtons.forEach((btn) => {
-    btn.addEventListener("click", (event) => {
-      event.stopPropagation();
-      pilihJawaban(
-        btn,
-        soal.jawaban,
-        btn.getAttribute("data-jawaban-pilih"),
-        index
-      );
-    });
+  // Tambahkan event listener ke tombol 'X' dan tombol pilihan
+  cardBack.querySelector(".close-btn").addEventListener("click", (e) => {
+    e.stopPropagation(); // Hentikan event agar tidak memicu overlay click
+    closeActiveCard();
   });
 
-  // 4. PUTAR KARTU (beri jeda agar efek fokus terlihat)
-  setTimeout(() => {
-    cardInner.classList.add("is-flipped");
-  }, 10);
-
-  // 5. Mulai Timer
-  startTimer(index);
+  cardBack.querySelectorAll(".option-btn").forEach((btn) => {
+    btn.addEventListener("click", () => handleAnswer(btn, data.correctAnswer));
+  });
 }
 
-function startTimer(index) {
-  timer = 30;
-  timerDisplay.innerText = timer;
-  clearInterval(timerInterval);
+/**
+ * Menangani logika saat pengguna memilih jawaban
+ */
+function handleAnswer(selectedButton, correctAnswer) {
+  stopTimer();
+
+  const allOptions = activeCard.querySelectorAll(".option-btn");
+  // Nonaktifkan semua tombol pilihan
+  allOptions.forEach((btn) => btn.classList.add("disabled"));
+
+  // Ambil opsi dari data-attribute, bukan dari textContent
+  const selectedAnswer = selectedButton.dataset.option;
+
+  if (selectedAnswer === correctAnswer) {
+    // --- Jawaban Benar ---
+    points += 10; // Skor 10 per jawaban benar
+    selectedButton.classList.add("correct");
+    activeCard.classList.add("is-correct");
+
+    // Tutup kartu setelah 1 detik
+    setTimeout(closeActiveCard, 1000);
+  } else {
+    // --- Jawaban Salah ---
+    selectedButton.classList.add("wrong");
+    // Tampilkan jawaban yang benar
+    allOptions.forEach((btn) => {
+      if (btn.dataset.option === correctAnswer) {
+        btn.classList.add("correct");
+      }
+    });
+    activeCard.classList.add("is-wrong");
+
+    // Tutup kartu setelah 2 detik
+    setTimeout(closeActiveCard, 2000);
+  }
+
+  answeredCards++;
+  updateScoreboard();
+
+  // Cek apakah level selesai
+  checkLevelCompletion();
+}
+
+/**
+ * Menutup kartu yang sedang aktif
+ */
+function closeActiveCard() {
+  if (!activeCard) return;
+
+  stopTimer();
+  resetTimer(); // Siapkan timer untuk kartu berikutnya
+
+  activeCard.classList.remove("is-flipped", "is-active");
+  pageOverlay.classList.remove("visible");
+
+  // Kosongkan konten card-back setelah animasi selesai
+  setTimeout(() => {
+    if (activeCard) {
+      // Pastikan activeCard masih ada
+      activeCard.querySelector(".card-back").innerHTML = "";
+      activeCard = null; // Setel ulang kartu aktif
+    }
+  }, 800); // Sesuaikan dengan durasi transisi CSS
+}
+
+/**
+ * Memeriksa apakah semua kartu sudah terjawab dan menyimpan progres.
+ */
+function checkLevelCompletion() {
+  if (answeredCards === cards.length) {
+    // Simpan progres dan tampilkan modal setelah 1 detik
+    setTimeout(() => {
+      saveProgress()
+        .then(() => {
+          // Jika progres berhasil disimpan, tampilkan modal
+          modalScoreEl.textContent = points;
+          modalOverlay.classList.add("visible");
+        })
+        .catch((error) => {
+          // Jika gagal, tetap tampilkan modal tapi beri tahu user
+          console.error(
+            "Gagal menyimpan progres, tapi modal tetap ditampilkan.",
+            error
+          );
+          modalScoreEl.textContent = points;
+          modalOverlay.classList.add("visible");
+          // Anda bisa menambahkan elemen pesan error di modal jika diperlukan
+        });
+    }, 1000);
+  }
+}
+
+/**
+ * Mengirim progres (skor dan level) ke server.
+ * @returns {Promise}
+ */
+function saveProgress() {
+  // Kirim data menggunakan Fetch API ke endpoint PHP
+  const formData = new URLSearchParams();
+  formData.append("skor", points);
+  formData.append("lvl", level);
+
+  // Mengembalikan promise dari fetch
+  return fetch("update_progres.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: formData,
+  })
+    .then((response) => {
+      if (!response.ok)
+        throw new Error("Gagal menyimpan progres. Pastikan Anda sudah login.");
+      return response.json();
+    })
+    .then((data) => {
+      if (data.status !== "success") {
+        throw new Error(
+          "Penyimpanan progres gagal: " +
+            (data.message || "Error tidak diketahui.")
+        );
+      }
+      console.log("Progres berhasil disimpan.");
+      return data;
+    });
+}
+
+/**
+ * Mengarahkan pengguna ke level berikutnya.
+ */
+function goToNextLevel() {
+  // Logika penyimpanan sudah dipindah ke checkLevelCompletion.
+  // Fungsi ini sekarang hanya bertugas untuk navigasi.
+  if (nextLevelBtn) {
+    // Pastikan tombol nextLevelBtn ada
+    const nextLevel = nextLevelBtn.dataset.nextLevel;
+    window.location.href = `levelgame.php?level=${nextLevel}`;
+  }
+}
+
+// --- 5. FUNGSI TIMER ---
+function startTimer() {
+  timeLeft = 40; // Reset waktu
+  updateTimerDisplay();
+
+  clearInterval(timerInterval); // Hentikan timer lama jika ada
 
   timerInterval = setInterval(() => {
-    timer--;
-    timerDisplay.innerText = timer;
+    timeLeft--;
+    updateTimerDisplay();
 
-    if (timer <= 0) {
-      clearInterval(timerInterval);
-      // Panggil closeQuestion dan putar kembali kartu
-      closeQuestion(index, false);
+    if (timeLeft <= 0) {
+      handleTimeout();
     }
   }, 1000);
 }
 
-function pilihJawaban(btn, jawabanBenar, jawabanPilih, index) {
+function stopTimer() {
   clearInterval(timerInterval);
-
-  const isCorrect = jawabanPilih === jawabanBenar;
-  // MENGUBAH: Menambahkan kelas CSS untuk menampilkan warna (telah ditambahkan di CSS)
-  btn.classList.add(isCorrect ? "correct" : "incorrect");
-
-  // Nonaktifkan semua tombol jawaban di kartu yang sama
-  const optionsDiv = btn.closest(".options");
-  optionsDiv
-    .querySelectorAll(".answer-btn")
-    .forEach((b) => (b.disabled = true));
-
-  if (isCorrect) {
-    skor += 10;
-    skorDisplay.innerText = skor;
-  }
-
-  setTimeout(() => {
-    // Panggil closeQuestion dan putar kembali kartu
-    closeQuestion(index, isCorrect);
-  }, 1000);
 }
 
-// MENGUBAH: Fungsi closeQuestion sekarang memutar kartu kembali dan menghilangkan fokus
-function closeQuestion(index, benar, forfeit) {
-  {
-    totalDijawab++;
-
-    const cardContainer = cardContainers[index];
-    const cardInner = cardContainer.querySelector(".flip-card-inner");
-    const cardFront = cardContainer.querySelector(".flip-card-front");
-
-    // TANDAI KARTU SUDAH DIJAWAB
-    cardContainer.classList.add("answered");
-
-    // TAMPILKAN HASIL PADA SISI DEPAN KARTU
-    cardFront.innerHTML = `
-        <div style="
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100%; 
-            font-size: 50px; 
-            color: white;
-            border-radius: 12px;
-            background-color: ${benar ? "#4caf50" : "#f44336"};
-        ">
-            ${benar ? "✔️" : "❌"}
-        </div>
-    `;
-  }
-
-  const cardContainer = cardContainers[index];
-  const cardInner = cardContainer.querySelector(".flip-card-inner");
-
-  // 1. PUTAR KEMBALI KARTU
-  setTimeout(() => {
-    cardInner.classList.remove("is-flipped");
-  }, 500); // 500ms setelah jawaban ditandai
-
-  // 2. HILANGKAN FOKUS
-  setTimeout(() => {
-    activeCardIndex = -1;
-    cardContainer.classList.remove("is-focused");
-    if (cardContainerMain) cardContainerMain.classList.remove("has-focus");
-  }, 1100); // setelah animasi selesai
-
-  // Lanjutkan ke logika level
-  if (totalDijawab === soalList.length) {
-    nextLevelBtn.style.display = "block";
-    updateProgres();
-  }
+function resetTimer() {
+  timeLeft = 40; // Sesuaikan dengan nilai awal
+  updateTimerDisplay();
 }
 
-function updateProgres() {
-  const level = new URLSearchParams(window.location.search).get("level") || 1;
+/**
+ * Logika jika waktu habis (dianggap salah)
+ */
+function handleTimeout() {
+  stopTimer();
+  if (!activeCard) return;
 
-  fetch("update_progres.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `skor=${skor}&lvl=${level}`,
-  })
-    .then((res) => {
-      if (!res.ok) {
-        alert("Gagal menyimpan progres! Pastikan Anda sudah login.");
-        return null;
-      }
-      return res.json();
-    })
-    .then((data) => {
-      if (data && data.status !== "success") {
-        alert("Progres tidak tersimpan!");
-      } else if (data && data.status === "success") {
-        // Optional: tampilkan notifikasi progres berhasil
-        // alert("Progres berhasil disimpan!");
-      }
-    })
-    .catch((err) => {
-      alert("Terjadi kesalahan koneksi ke server!");
-    });
+  // Tandai sebagai salah
+  activeCard.classList.add("is-wrong");
+  answeredCards++;
+
+  // Tampilkan jawaban yang benar
+  const data = quizData.find((q) => q.id == activeCard.dataset.id);
+  const allOptions = activeCard.querySelectorAll(".option-btn");
+  allOptions.forEach((btn) => {
+    btn.classList.add("disabled");
+    if (btn.dataset.option === data.correctAnswer) {
+      // Menggunakan data-option
+      btn.classList.add("correct");
+    }
+  });
+
+  // Tutup setelah 2 detik
+  setTimeout(closeActiveCard, 2000);
+  checkLevelCompletion();
 }
 
-window.onload = startGame;
+// --- 6. FUNGSI UTILITAS ---
+
+function updateScoreboard() {
+  pointsEl.textContent = points;
+  levelEl.textContent = level;
+}
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  // Format "00:00"
+  timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`;
+}
+
+// --- 7. Jalankan Game ---
+document.addEventListener("DOMContentLoaded", initializeGame);

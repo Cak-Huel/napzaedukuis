@@ -220,7 +220,6 @@ header {
 }
 
 .lock::before {
-    content: '🔒';
     position: absolute;
     top: 4px;
     left: 50%;
