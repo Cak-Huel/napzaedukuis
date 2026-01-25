@@ -1,6 +1,5 @@
 body {
-    font-family: "Comic Neue", cursive;
-    font-weight: 700;
+    font-family: "Poppins", sans-serif;
     font-style: normal;
     color: #000000;
     margin: 0px;
@@ -50,7 +49,7 @@ body {
 }
 
 .navbar .navbar-nav .btn-login {
-    font-family: "Comic Neue", cursive;
+    font-family: "Poppins", sans-serif;
     background-color: white;
     border: none;
     border-radius: 15px;
@@ -70,7 +69,7 @@ body {
 }
 
 .navbar .navbar-nav .btn-profile {
-    font-family: "Comic Neue", cursive;
+    font-family: "Poppins", sans-serif;
     background-color: white;
     border: none;
     border-radius: 15px;
@@ -89,9 +88,72 @@ body {
     color: white;
 }
 
+.navbar .navbar-nav .language-switcher {
+    display: flex;
+    align-items: center;
+    float: left;
+    padding: 20px;
+    color: white;
+    font-size: 1.2vw;
+    text-decoration: none;
+    cursor: pointer;
+    gap: 5px;
+}
+
+.navbar .navbar-nav .language-switcher label {
+    color: inherit;
+    margin: 0;
+}
+
+.navbar .navbar-nav .language-switcher select {
+    background-color: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-size: 1.2vw;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 5px center;
+    background-size: 10px;
+}
+
+.navbar .navbar-nav .language-switcher select option {
+    color: black;
+    /* Warna teks opsi */
+    background-color: white;
+    /* Latar belakang opsi */
+}
+
+.navbar .navbar-nav .language-switcher:hover {
+    background-color: white;
+    color: #1f8dff;
+}
+
+.navbar .navbar-nav .language-switcher:hover label,
+.navbar .navbar-nav .language-switcher:hover select {
+    color: #1f8dff;
+}
+
+.navbar .navbar-nav .language-switcher:hover select {
+    border-color: #1f8dff;
+}
+
+.hamburger-menu {
+    display: none; 
+}
+
 /* content */
 .fiture {
     display: flex;
+    background-image: url("aset/bg trans.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     flex-wrap: nowrap;
     justify-content: flex-start;
     margin: 0 auto;
@@ -99,6 +161,117 @@ body {
     gap: 20px;
     height: 500px;
     flex-direction: column;
+    position: relative;
+}
+
+.floating-poster-btn {
+    position: absolute;
+    top: 10px;
+    right: 40px;
+    width: 70px;
+    cursor: pointer;
+    z-index: 50;
+    transition: transform 0.3s;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.floating-poster-btn:hover {
+    transform: scale(1.1);
+}
+
+.floating-poster-btn img {
+    width: 100%;
+    display: block;
+    border-radius: 4px;
+}
+
+.floating-poster-btn p {
+    margin: 5px 0 0 0;
+    font-size: 12px;
+    text-align: center;
+    color: #000;
+}
+
+/* Styles untuk Modal Slider Poster */
+.poster-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.poster-container {
+    position: relative;
+    width: 90%;
+    max-width: 400px;
+}
+
+.poster-slider {
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.poster-track {
+    display: flex;
+    transition: transform 0.4s ease-in-out;
+}
+
+.poster-track img {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.poster-nav {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    pointer-events: none;
+    /* Biar klik tembus ke area kosong */
+}
+
+.poster-nav button {
+    pointer-events: auto;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 3rem;
+    cursor: pointer;
+    padding: 0 15px;
+    transition: transform 0.3s;
+}
+
+.poster-nav button:first-child {
+    margin-left: -60px;
+}
+
+.poster-nav button:last-child {
+    margin-right: -60px;
+}
+
+.poster-nav button:hover {
+    transform: scale(1.1);
+}
+
+.poster-close {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
 }
 
 .fiture .game {
@@ -133,6 +306,7 @@ body {
 }
 
 .fiture .solo h5 {
+    font-weight: 600;
     margin: 0px;
     padding: 0px;
     font-size: 18px;
@@ -162,6 +336,7 @@ body {
 }
 
 .fiture .multipalyer h5 {
+    font-weight: 600;
     margin: 0px;
     padding: 0px;
     font-size: 18px;
@@ -178,7 +353,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 1004;
 }
 
 #modal-dialog {
@@ -295,9 +470,43 @@ footer {
         font-size: 16px;
         margin: 20px 20px 15px;
     }
+    
+    .floating-poster-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 50px;
+        cursor: pointer;
+        z-index: 50;
+        transition: transform 0.3s;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 5px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .floating-poster-btn p {
+        margin: 5px 0 0 0;
+        font-size: 9px;
+        text-align: center;
+        color: #000;
+    }
+
+    .poster-nav button {
+        font-size: 2rem;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .poster-nav button:first-child {
+        margin-left: 0;
+    }
+
+    .poster-nav button:last-child {
+        margin-right: 0;
+    }
 
     footer {
-        position: sticky;
+        position: fixed;
         bottom: 0;
         width: 100vw;
         /* agar benar-benar full width */
@@ -367,6 +576,45 @@ footer {
         width: 80%;
         font-size: 16px;
         margin: 20px 20px 15px;
+    }
+    
+        .navbar .navbar-nav .language-switcher {
+        float: none;
+        /* Hapus float untuk mobile */
+        width: 100%;
+        /* Lebar penuh */
+        padding: 15px 20px;
+        /* Padding yang sama dengan link menu */
+        box-sizing: border-box;
+        font-size: 18px;
+        justify-content: flex-start;
+        /* Rata kiri */
+    }
+
+    .navbar .navbar-nav .language-switcher select {
+        font-size: 18px;
+        /* Ukuran font yang sama dengan menu mobile */
+    }
+
+    .floating-poster-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 50px;
+        cursor: pointer;
+        z-index: 50;
+        transition: transform 0.3s;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 5px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .floating-poster-btn p {
+        margin: 5px 0 0 0;
+        font-size: 9px;
+        text-align: center;
+        color: #000;
     }
 
     footer {

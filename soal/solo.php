@@ -8,6 +8,7 @@ include '../sekret.php';
 
 $total_level = 10;
 $opened_level = 1; // default level 1 terbuka
+$current_lang = $_SESSION['lang'] ?? 'id'; // Tentukan bahasa, default 'id'
 
 if (isset($_SESSION['id_user'])) {
   $id_user = $_SESSION['id_user'];
@@ -17,19 +18,24 @@ if (isset($_SESSION['id_user'])) {
     $opened_level = $data['lvl_terakhir'];
   }
 }
+
+// Ambil data progres, sediakan nilai default jika tidak ada
+$query_progress = mysqli_query($conn, "SELECT lvl_terakhir, skor_total FROM progres WHERE id_user = $id_user");
+$data_progress = mysqli_fetch_assoc($query_progress);
+$total_score = $data_progress['skor_total'] ?? 0; // Default ke 0 jika belum ada progres
 ?>
 
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= $current_lang ?>">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="solo.css" />
     <link rel="icon" type="image/x-icon" href="../aset/logo1.png" />
-    <title>Solo Survival</title>
+    <title data-key="solo_survival_title">Solo Survival</title>
   </head>
   <body>
     <!-- Header -->
@@ -44,15 +50,17 @@ if (isset($_SESSION['id_user'])) {
         &#9776; </button>
 
         <nav  id="navbar-menu">
-          <a href="../index.php">Beranda</a>
-          <a href="#materi">Materi</a>
-          <a href="#panduan">Panduan</a>
-          <a href="#tentang">Tentang</a>
+          <a href="../index.php" data-key="home_menu">Beranda</a>
+          <a href="#materi" data-key="material_menu">Materi</a>
+          <a href="#panduan" data-key="guidance_menu">Panduan</a>
+          <a href="#tentang" data-key="about_menu">Tentang</a>
+          
           <?php if (isset($_SESSION['nama'])): ?>
           <button
             class="btn-profil"
             title="Profil"
             onclick="window.location.href='../user/profil.php'"
+            data-key="profile_button"
           >
             Profil
           </button>
@@ -61,6 +69,7 @@ if (isset($_SESSION['id_user'])) {
             class="btn-profil"
             title="Masuk"
             onclick="window.location.href='../user/login.php'"
+            data-key="lohin_button_menu"
           >
             Login
           </button>
@@ -74,7 +83,10 @@ if (isset($_SESSION['id_user'])) {
         <div class="progress-container">
           <div class="progress-bar" style="width: <?php echo ($opened_level/$total_level)*100; ?>%;"></div>
         </div>
-        <p class="level-title">Pilih Level Permainan</p>
+        <p class="level-title" data-key="select_game_level">Pilih Level Permainan</p>
+         <div class="game-stats">
+            <span><span data-key="total_score_label">Skor Total:</span> <span id="points"><?= htmlspecialchars($total_score) ?></span></span>
+        </div>
       </div>
     </header>
     <!-- End Header -->
@@ -88,9 +100,9 @@ if (isset($_SESSION['id_user'])) {
             <?php
               // Level yang boleh dimainkan hanya level yang sama dengan lvl_terakhir (opened_level)
               if ($i == $opened_level): ?>
-              <a href="levelgame.php?level=<?php echo $i; ?>" class="btn-play">MAINKAN</a>
+              <a href="levelgame.php?level=<?php echo $i; ?>" class="btn-play" data-key="play_button">MAINKAN</a>
             <?php elseif ($i < $opened_level): ?>
-              <span class="completed">✔️ Selesai</span>
+              <span class="completed" data-key="completed_status">✔️ Selesai</span>
             <?php else: ?>
               <div class="lock">🔒</div>
             <?php endif; ?>
@@ -106,28 +118,28 @@ if (isset($_SESSION['id_user'])) {
 <div id="modal-overlay" style="display:none;">
   <div id="modal-dialog">
     <span id="modal-close">&times;</span>
-    <h2 id="modal-title">Judul Modal</h2>
-    <h4 id="modal-subtitle">Sub Judul</h4>
+    <h2 id="modal-title" data-key="modal_title_placeholder">Judul Modal</h2>
+    <h4 id="modal-subtitle" data-key="modal_subtitle_placeholder">Sub Judul</h4>
     <div id="modal-content">Isi modal di sini.</div>
   </div>
 </div>
 <!-- End Modal Dialog -->
 
 <div class="reset-container">
-        <button id="reset-progress-btn" class="reset-btn">
+        <button id="reset-progress-btn" class="reset-btn" data-key="reset_progress_button">
             Reset Progress Level
         </button>
       </div>
       
-          <button id="nextLevel" style="display: none;" onclick="window.location='levelgame.php?level=<?php echo $level+1; ?>'">
+          <button id="nextLevel" style="display: none;" onclick="window.location='levelgame.php?level=<?php echo $level+1; ?>'" data-key="next_level_button">
             Lanjut ke Level Berikutnya
             </button>
 
     <footer>
       <p>@2025 Napza Edu card</p>
     </footer>
-      
-      <script>
+    
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const resetBtn = document.getElementById('reset-progress-btn');
             
@@ -163,7 +175,10 @@ if (isset($_SESSION['id_user'])) {
             }
         });
       </script>
-
+      
     <script src="../modal.js"></script>
+        <!-- Skrip Terjemahan -->
+    <script src="../user/translations.js"></script>
+    <script src="../user/profil.js"></script>
   </body>
 </html>

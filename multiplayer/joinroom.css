@@ -1,6 +1,5 @@
 body {
-    font-family: "Comic Neue";
-    font-weight: 700;
+    font-family: "Poppins", sans-serif;
     font-style: normal;
     background-color: #fff;
     margin: 0;
@@ -49,12 +48,9 @@ body {
     color: #1f8dff;
 }
 
-.hamburger-menu {
-    display: none;
-}
-
 .navbar .btn-profile,
 .navbar .btn-login {
+    font-family: "Poppins", sans-serif;
     background: white;
     color: #1f8dff;
     border: none;
@@ -70,6 +66,10 @@ body {
 .navbar .btn-login:hover {
     background-color: #004b96;
     color: white;
+}
+
+.hamburger-menu {
+    display: none; 
 }
 
 .back-btn {
@@ -141,7 +141,7 @@ body {
 }
 
 .btn-join {
-    font-family: Brush Script MT, Cursive, sans-serif;
+    font-family: "Poppins", sans-serif;
     background-color: #2196f3;
     color: white;
     border: none;
@@ -322,7 +322,7 @@ footer {
     }
 
     footer {
-        position: sticky;
+        position: fixed;
         bottom: 0;
     }
 }
@@ -330,19 +330,18 @@ footer {
 /* small (portrait tablet & large phone) */
 @media only screen and (min-width: 600px) {
 
-
-    .join-box {
-        width: 88%;
-    }
-
     footer {
-        position: sticky;
+        position: fixed;
         bottom: 0;
     }
 }
 
 /* medium (landscape tablet) */
 @media only screen and (min-width: 768px) {
+
+    .join-box {
+        width: 88%;
+    }
 
     footer {
         position: fixed;

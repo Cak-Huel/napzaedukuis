@@ -1,7 +1,6 @@
-/* Warna dasar */
 body {
+    font-family: "Poppins", sans-serif;
     background-color: #1f8dff;
-    font-family: "Comic Neue";
     font-weight: 700;
     font-style: normal;
     margin: 0;
@@ -40,8 +39,11 @@ body {
 
 /* Kartu Pertanyaan */
 .question-card {
-    background-color: white;
-    border: 3px solid red;
+    background-image: url('../aset/flip card.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 3px solid rgba(255, 255, 255, 0.644);
     width: 80%;
     max-width: 700px;
     margin: 30px auto;
@@ -52,6 +54,12 @@ body {
     font-size: 20px;
     font-weight: bold;
     box-sizing: border-box;
+}
+
+.question-text {
+    margin: 0;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .flower {
@@ -76,7 +84,7 @@ body {
 }
 
 .answer-btn {
-    font-family: Brush Script MT, Cursive, sans-serif;
+    font-family: "Poppins", sans-serif;
     background-color: white;
     border: 3px solid #ccc;
     border-radius: 25px;

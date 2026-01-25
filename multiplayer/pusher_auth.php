@@ -3,7 +3,7 @@ session_start();
 
 // Sertakan file konfigurasi yang dibutuhkan
 require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/../pusher-config.php'; // Mengandung $pusher object
+require __DIR__ . '/../pusher_config.php'; // Mengandung $pusher object
 require __DIR__ . '/../sekret.php'; // Untuk koneksi $conn jika diperlukan
 
 header('Content-Type: application/json');

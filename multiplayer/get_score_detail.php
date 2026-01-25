@@ -7,7 +7,6 @@ $id_room = isset($_GET['id_room']) ? (int)$_GET['id_room'] : 0;
 $id_peserta = isset($_GET['id_peserta']) ? (int)$_GET['id_peserta'] : 0;
 
 if (!$id_room || !$id_peserta) {
-    http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Data tidak lengkap.']);
     exit;
 }
@@ -71,9 +70,14 @@ $stmt_total_soal->execute();
 $total_soal_data = $stmt_total_soal->get_result()->fetch_assoc();
 $response['total_soal'] = (int)($total_soal_data['total'] ?? 0);
 
-// 5. Ambil data untuk review soal
-$sql_review = "SELECT s.pertanyaan, s.jwbn_a, s.jwbn_b, s.jwbn_c, s.jwbn_d, s.jwbn_benar AS kunci_jawaban, 
-                      j.jawaban AS jawaban_user, j.benar AS benar_user 
+// --- BAGIAN REVIEW (YANG KITA PERBAIKI) ---
+// Perhatikan: s.jwbn_benar kita alias-kan jadi 'kunci_jawaban'
+// Perhatikan: j.jawaban kita alias-kan jadi 'jawaban_user'
+
+$sql_review = "SELECT s.pertanyaan, s.jwbn_a, s.jwbn_b, s.jwbn_c, s.jwbn_d, 
+                      s.jwbn_benar AS kunci_jawaban, 
+                      j.jawaban AS jawaban_user, 
+                      j.benar AS benar_user 
                FROM soal_mlt s 
                LEFT JOIN jawaban_room j ON s.id_soalmlt = j.id_soalmlt AND j.id_peserta = ?
                WHERE s.id_room = ? 
@@ -86,19 +90,25 @@ $review_result = $stmt_review->get_result();
 $review_data = [];
 
 while ($row = $review_result->fetch_assoc()) {
+    // Normalisasi Data: Huruf Besar & Trim Spasi
+    $kunci = strtoupper(trim($row['kunci_jawaban'] ?? '')); // Contoh: "C"
+    $user  = strtoupper(trim($row['jawaban_user'] ?? ''));  // Contoh: "B"
+    
+    // Pastikan status benar/salah valid
+    $is_benar = ($kunci === $user && !empty($user));
+
     $review_data[] = [
-        'pertanyaan' => $row['pertanyaan'],
-        'jwbn_a' => $row['jwbn_a'],
-        'jwbn_b' => $row['jwbn_b'],
-        'jwbn_c' => $row['jwbn_c'],
-        'jwbn_d' => $row['jwbn_d'],
-        'kunci_jawaban' => $row['kunci_jawaban'],
-        'jawaban_user' => $row['jawaban_user'],
-        'benar_user' => (bool)$row['benar_user']
+        'pertanyaan'    => $row['pertanyaan'],
+        'jwbn_a'        => $row['jwbn_a'],
+        'jwbn_b'        => $row['jwbn_b'],
+        'jwbn_c'        => $row['jwbn_c'],
+        'jwbn_d'        => $row['jwbn_d'],
+        'kunci_jawaban' => $kunci,
+        'jawaban_user'  => $user,
+        'benar_user'    => $is_benar
     ];
 }
 $response['review'] = $review_data;
 
 echo json_encode($response);
-
 ?>

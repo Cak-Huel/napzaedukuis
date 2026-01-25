@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php'; // Sesuaikan path jika perlu
-include '/../sekret.php'; // Sesuaikan dengan path koneksi database Anda
+include __DIR__ . '/../sekret.php'; // Sesuaikan dengan path koneksi database Anda
 
 header('Content-Type: application/json');
 

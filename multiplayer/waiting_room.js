@@ -69,6 +69,14 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error("Pusher JS tidak ditemukan.");
           return;
         }
+        
+         const pusher = new Pusher('48dc0e7685cb274b770b', { // Ganti dengan App Key Anda
+            cluster: 'ap1', // Ganti dengan cluster Anda
+            channelAuthorization: {
+                endpoint: 'pusher_auth.php', // Tentukan alamat file otorisasi kita
+                transport: 'ajax'
+            }
+        });
 
         const channelName = `private-quiz-${data.kode_room}`;
         const channel = pusher.subscribe(channelName);

@@ -1,6 +1,5 @@
 body {
-    font-family: "Comic Neue";
-    font-weight: 700;
+    font-family: "Poppins", sans-serif;
     font-style: normal;
     color: #000000;
     margin: 0px;
@@ -49,13 +48,9 @@ body {
     color: #1f8dff;
 }
 
-.hamburger-menu {
-    display: none;
-}
-
 .navbar .navbar-nav .btn-login,
 .navbar .navbar-nav .btn-profile {
-    font-family: Brush Script MT, Cursive, sans-serif;
+    font-family: "Poppins", sans-serif;
     background-color: white;
     border: none;
     border-radius: 15px;
@@ -73,6 +68,10 @@ body {
 .navbar .navbar-nav .btn-profile:hover {
     background-color: #004b96;
     color: white;
+}
+
+.hamburger-menu {
+    display: none; 
 }
 
 /* content */
@@ -280,7 +279,7 @@ footer {
     }
 
     footer {
-        position: sticky;
+        position: fixed;
         bottom: 0;
     }
 }
@@ -288,7 +287,7 @@ footer {
 /* small (portrait tablet & large phone) */
 @media only screen and (min-width: 600px) {
     footer {
-        position: sticky;
+        position: fixed;
         bottom: 0;
     }
 }

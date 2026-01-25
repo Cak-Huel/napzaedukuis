@@ -31,7 +31,7 @@ $maxQuestions = 5;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
      <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../soal/form.css" />
     <link rel="icon" type="image/x-icon" href="aset/logo1.png" />
     <title>Form Soal - Solo Mode</title>
@@ -106,7 +106,7 @@ $maxQuestions = 5;
 
         <label for="correct">Jawaban Benar</label>
         <select id="correct" name="jwbn_bnr" required>
-            <option value="">-- Pilih Jawaban Benar --</option>
+          <option value="">-- Pilih Jawaban Benar --</option>
             <?php 
             $selected_jwbn = $mode === 'edit' ? $current_soal['jwbn_bnr'] : '';
             foreach (['A', 'B', 'C', 'D'] as $opt): ?>
@@ -114,7 +114,7 @@ $maxQuestions = 5;
             <?php endforeach; ?>
         </select>
 
-        <label for="level">Level</label>
+         <label for="level">Level</label>
         <select id="level" name="lvl" required>
             <option value="">-- Pilih Level --</option>
             <?php 

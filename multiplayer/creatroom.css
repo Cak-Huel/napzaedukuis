@@ -1,4 +1,5 @@
 body {
+    font-family: "Poppins", sans-serif;
     background: #f7f7fc;
     font-family: "Comic Neue";
     font-weight: 700;
@@ -44,6 +45,7 @@ input[type="text"] {
 
 button[type="submit"],
 button[type="button"] {
+    font-family: "Poppins", sans-serif;
     background: #3a86ff;
     color: #fff;
     border: none;

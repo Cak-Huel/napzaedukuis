@@ -1,8 +1,7 @@
 /* Warna latar belakang */
 body {
     background-color: #1f8dff;
-    font-family: "Comic Neue";
-    font-weight: 700;
+    font-family: "Poppins", sans-serif;
     font-style: normal;
     margin: 0;
     padding: 0;
@@ -90,17 +89,59 @@ body {
 }
 
 .review-item {
-    margin-bottom: 20px;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.review-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.option-item {
+    padding: 10px 15px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    font-size: 14px;
 }
 
 .jawaban-benar {
-    color: #00c853;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
     font-weight: bold;
 }
 
 .jawaban-salah {
-    color: #e53935;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    text-decoration: line-through; /* Mencoret jawaban salah */
+    opacity: 0.8;
+}
+
+/* KOREKSI: Jawaban benar yang tidak dipilih user */
+.jawaban-kunci {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 2px solid #17a2b8; /* Border lebih tebal agar kontras */
     font-weight: bold;
+    position: relative;
+}
+
+/* Menambahkan label teks " (Jawaban Benar)" secara otomatis */
+.jawaban-kunci::after {
+    content: " \2713 (Jawaban Seharusnya)"; /* Simbol checkmark + teks */
+    font-size: 0.85em;
+    color: #007bff;
+    font-style: italic;
+    margin-left: 5px;
 }
 
 /* Scrollbar untuk Review */

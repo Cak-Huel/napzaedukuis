@@ -1,0 +1,66 @@
+[29-Sep-2025 01:22:32 UTC] PHP Fatal error:  Uncaught Error: mysqli_stmt object is already closed in /home/napzaedu/public_html/user/register.php:44
+Stack trace:
+#0 /home/napzaedu/public_html/user/register.php(44): mysqli_stmt->execute()
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/register.php on line 44
+[03-Oct-2025 18:45:40 Asia/Jakarta] PHP Warning:  mysqli::__construct(): (HY000/1044): Access denied for user 'napzaedu_cakhul'@'localhost' to database 'napzaedu_napzagame' in /home/napzaedu/public_html/sekret.php on line 7
+[03-Oct-2025 18:47:48 Asia/Jakarta] PHP Warning:  mysqli::__construct(): (HY000/1044): Access denied for user 'napzaedu_cakhul'@'localhost' to database 'napzaedu_napzagame' in /home/napzaedu/public_html/sekret.php on line 7
+[03-Oct-2025 18:51:38 Asia/Jakarta] PHP Warning:  mysqli::__construct(): (HY000/1044): Access denied for user 'napzaedu_cakhul'@'localhost' to database 'napzaedu_napzagame' in /home/napzaedu/public_html/sekret.php on line 7
+[03-Oct-2025 18:52:58 Asia/Jakarta] PHP Warning:  mysqli::__construct(): (HY000/1044): Access denied for user 'napzaedu_cakhul'@'localhost' to database 'napzaedu_napzagame' in /home/napzaedu/public_html/sekret.php on line 7
+[03-Oct-2025 18:53:40 Asia/Jakarta] PHP Warning:  mysqli::__construct(): (HY000/1044): Access denied for user 'napzaedu_cakhul'@'localhost' to database 'napzaedu_napzagame' in /home/napzaedu/public_html/sekret.php on line 7
+[03-Oct-2025 18:54:19 Asia/Jakarta] PHP Warning:  mysqli::__construct(): (HY000/1044): Access denied for user 'napzaedu_cakhul'@'localhost' to database 'napzaedu_napzagame' in /home/napzaedu/public_html/sekret.php on line 7
+[03-Oct-2025 20:03:14 Asia/Jakarta] PHP Fatal error:  Uncaught TypeError: mysqli_fetch_assoc(): Argument #1 ($result) must be of type mysqli_result, bool given in /home/napzaedu/public_html/user/hapus_soal.php:17
+Stack trace:
+#0 /home/napzaedu/public_html/user/hapus_soal.php(17): mysqli_fetch_assoc(false)
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/hapus_soal.php on line 17
+[03-Oct-2025 20:03:22 Asia/Jakarta] PHP Fatal error:  Uncaught TypeError: mysqli_fetch_assoc(): Argument #1 ($result) must be of type mysqli_result, bool given in /home/napzaedu/public_html/user/hapus_soal.php:17
+Stack trace:
+#0 /home/napzaedu/public_html/user/hapus_soal.php(17): mysqli_fetch_assoc(false)
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/hapus_soal.php on line 17
+[03-Oct-2025 20:03:25 Asia/Jakarta] PHP Fatal error:  Uncaught TypeError: mysqli_fetch_assoc(): Argument #1 ($result) must be of type mysqli_result, bool given in /home/napzaedu/public_html/user/hapus_soal.php:17
+Stack trace:
+#0 /home/napzaedu/public_html/user/hapus_soal.php(17): mysqli_fetch_assoc(false)
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/hapus_soal.php on line 17
+[03-Oct-2025 20:05:25 Asia/Jakarta] PHP Fatal error:  Uncaught TypeError: mysqli_fetch_assoc(): Argument #1 ($result) must be of type mysqli_result, bool given in /home/napzaedu/public_html/user/hapus_soal.php:17
+Stack trace:
+#0 /home/napzaedu/public_html/user/hapus_soal.php(17): mysqli_fetch_assoc(false)
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/hapus_soal.php on line 17
+[03-Oct-2025 20:05:34 Asia/Jakarta] PHP Fatal error:  Uncaught TypeError: mysqli_fetch_assoc(): Argument #1 ($result) must be of type mysqli_result, bool given in /home/napzaedu/public_html/user/hapus_soal.php:17
+Stack trace:
+#0 /home/napzaedu/public_html/user/hapus_soal.php(17): mysqli_fetch_assoc(false)
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/hapus_soal.php on line 17
+[03-Oct-2025 20:06:17 Asia/Jakarta] PHP Fatal error:  Uncaught TypeError: mysqli_fetch_assoc(): Argument #1 ($result) must be of type mysqli_result, bool given in /home/napzaedu/public_html/user/hapus_soal.php:17
+Stack trace:
+#0 /home/napzaedu/public_html/user/hapus_soal.php(17): mysqli_fetch_assoc(false)
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/hapus_soal.php on line 17
+[03-Oct-2025 22:51:52 Asia/Jakarta] PHP Fatal error:  Uncaught TypeError: mysqli_fetch_assoc(): Argument #1 ($result) must be of type mysqli_result, bool given in /home/napzaedu/public_html/user/hapus_soal.php:17
+Stack trace:
+#0 /home/napzaedu/public_html/user/hapus_soal.php(17): mysqli_fetch_assoc(false)
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/hapus_soal.php on line 17
+[07-Oct-2025 00:01:50 Asia/Jakarta] PHP Fatal error:  Uncaught Error: mysqli_stmt object is already closed in /home/napzaedu/public_html/user/register.php:44
+Stack trace:
+#0 /home/napzaedu/public_html/user/register.php(44): mysqli_stmt->execute()
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/register.php on line 44
+[09-Oct-2025 15:58:47 Asia/Jakarta] PHP Fatal error:  Uncaught Error: mysqli_stmt object is already closed in /home/napzaedu/public_html/user/register.php:44
+Stack trace:
+#0 /home/napzaedu/public_html/user/register.php(44): mysqli_stmt->execute()
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/register.php on line 44
+[15-Oct-2025 16:06:02 Asia/Jakarta] PHP Fatal error:  Uncaught Error: mysqli_stmt object is already closed in /home/napzaedu/public_html/user/register.php:44
+Stack trace:
+#0 /home/napzaedu/public_html/user/register.php(44): mysqli_stmt->execute()
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/register.php on line 44
+[20-Oct-2025 15:10:52 Asia/Jakarta] PHP Fatal error:  Uncaught Error: mysqli_stmt object is already closed in /home/napzaedu/public_html/user/register.php:44
+Stack trace:
+#0 /home/napzaedu/public_html/user/register.php(44): mysqli_stmt->execute()
+#1 {main}
+  thrown in /home/napzaedu/public_html/user/register.php on line 44

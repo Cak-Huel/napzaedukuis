@@ -9,9 +9,9 @@ $options = array(
 );
 
 $pusher = new Pusher\Pusher(
-    'bhjbknjnnnk545121bj',      // Ganti dengan App Key Anda
-    '2121kmkmkmnj',   // Ganti dengan App Secret Anda
-    '0000505050',       // Ganti dengan App ID Anda
+    '',      // Ganti dengan App Key Anda
+    '',   // Ganti dengan App Secret Anda
+    '',       // Ganti dengan App ID Anda
     $options
 );
 

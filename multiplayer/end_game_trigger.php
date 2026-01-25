@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../pusher-config.php';
+require __DIR__ . '/../pusher_config.php';
 require __DIR__ . '/../sekret.php';
 
 header('Content-Type: application/json');

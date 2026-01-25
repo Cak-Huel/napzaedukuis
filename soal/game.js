@@ -90,7 +90,7 @@ function populateCardBack(card, data) {
 
   // Menangani jika path gambar NULL dari database
   const imageHTML = data.image
-    ? `<img src="soal/${data.image}" alt="Petunjuk Kuis" class="card-back-image">`
+    ? `<img src="${data.image}" alt="Petunjuk Kuis" class="card-back-image">`
     : "";
 
   cardBack.innerHTML = `
@@ -134,8 +134,8 @@ function handleAnswer(selectedButton, correctAnswer) {
     selectedButton.classList.add("correct");
     activeCard.classList.add("is-correct");
 
-    // Tutup kartu setelah 1 detik
-    setTimeout(closeActiveCard, 1000);
+    // Tutup kartu setelah 10 detik
+    setTimeout(closeActiveCard, 10000);
   } else {
     // --- Jawaban Salah ---
     selectedButton.classList.add("wrong");
@@ -147,8 +147,8 @@ function handleAnswer(selectedButton, correctAnswer) {
     });
     activeCard.classList.add("is-wrong");
 
-    // Tutup kartu setelah 2 detik
-    setTimeout(closeActiveCard, 2000);
+    // Tutup kartu setelah 10 detik
+    setTimeout(closeActiveCard, 10000);
   }
 
   answeredCards++;

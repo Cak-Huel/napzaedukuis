@@ -13,7 +13,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css" />
   <link rel="icon" type="image/x-icon" href="../aset/logo1.png" />
   <title>Admin - Napza Edu Card</title>
@@ -31,8 +31,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     </div>
   </nav>
   <main>
-    <?php
-     $menu = isset($_GET['menu']) ? $_GET['menu'] : 'pertanyaan';
+      <?php
+   $menu = isset($_GET['menu']) ? $_GET['menu'] : 'pertanyaan';
     $id_soal = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
     if ($menu === 'edit' && $id_soal > 0) {

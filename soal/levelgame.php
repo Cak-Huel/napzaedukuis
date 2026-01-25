@@ -4,6 +4,7 @@
 
     // 1. Ambil level dari URL, default ke 1 jika tidak ada
     $current_level = isset($_GET['level']) ? intval($_GET['level']) : 1;
+    $current_lang = $_SESSION['lang'] ?? 'id'; // Tentukan bahasa, default 'id'
 
     // 2. Ambil 5 soal dari database untuk level saat ini
     // Menggunakan prepared statement untuk keamanan
@@ -14,9 +15,25 @@
     
     $quizData = [];
     while ($row = $result->fetch_assoc()) {
-        // Buat array opsi untuk JSON
-        $row['options'] = [$row['jwbn_a'], $row['jwbn_b'], $row['jwbn_c'], $row['jwbn_d']];
-        // Hapus kunci yang tidak diperlukan di frontend
+        // Definisi prefix pilihan
+        $prefixes = ["A. ", "B. ", "C. ", "D. "];
+        $rawOptions = [$row['jwbn_a'], $row['jwbn_b'], $row['jwbn_c'], $row['jwbn_d']];
+        $formattedOptions = [];
+    
+        foreach ($rawOptions as $index => $opt) {
+            // Tambahkan A, B, C, D pada opsi
+            $newOpt = $prefixes[$index] . $opt;
+            $formattedOptions[] = $newOpt;
+    
+            // Jika jawaban benar di database sama dengan teks opsi mentah, update jawaban benar ke format baru
+            if ($row['correctAnswer'] === $opt) {
+                $row['correctAnswer'] = $newOpt;
+            }
+        }
+    
+        $row['options'] = $formattedOptions;
+    
+        // Hapus kunci mentah yang tidak diperlukan
         unset($row['jwbn_a'], $row['jwbn_b'], $row['jwbn_c'], $row['jwbn_d']);
         $quizData[] = $row;
     }
@@ -34,7 +51,7 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= $current_lang ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,23 +74,31 @@
         &#9776; </button>
 
         <ul class="menu">
-            <li><a href="#panduan">Panduan</a></li>
-            <li><a href="#tentang">Tentang</a></li>
-            
+            <li><a href="#panduan" data-key="guidance_menu">Panduan</a></li>
+            <li><a href="#tentang" data-key="about_menu">Tentang</a></li>
+
             <?php if(isset($_SESSION['id_user'])): ?>
-                <button class="nav-button" onclick="window.location.href='../user/profil.php'">Profil</button>
+                <button class="nav-button" 
+                    title="Profil" 
+                    onclick="window.location.href='../user/profil.php'"
+                    data-key="profile_button"
+                >Profil</button>
             <?php else: ?>
-                <button class="nav-button" onclick="window.location.href='../user/login.php'">Login</button>
+                <button class="nav-button"
+                    title="Masuk" 
+                    onclick="window.location.href='../user/login.php'"
+                    data-key="login_button_menu"
+                >Login</button>
             <?php endif; ?>
         </ul>
     </nav>
 
     <div class="sub-nav">
-        <a href="solo.php" class="back-button">&larr; Kembali</a>
-        <div class="level-display">Level: <span id="level"><?= htmlspecialchars($current_level) ?></span></div>
+        <a href="solo.php" class="back-button" data-key="back_to_menu_button">&larr; Kembali</a>
+        <div class="level-display"><span data-key="level_display_label">Level:</span> <span id="level"><?= htmlspecialchars($current_level) ?></span></div>
         <div class="game-stats">
-            <span>Points: <span id="points">0</span></span>
-            <span>Time: <span id="timer">00:40</span></span>
+            <span><span data-key="points_display_label">Points:</span> <span id="points">0</span></span>
+            <span><span data-key="time_display_label">Time:</span> <span id="timer">00:40</span></span>
         </div>
     </div>
 
@@ -90,15 +115,15 @@
 
     <div class="modal-overlay" id="completion-modal-overlay">
         <div class="modal">
-            <h2>Level Selesai!</h2>
-            <p>Skor kamu: <span id="modal-score">0</span></p>
+            <h2 data-key="level_complete_title">Level Selesai!</h2>
+            <p><span data-key="your_score_is">Skor kamu:</span> <span id="modal-score">0</span></p>
             <div class="modal-actions">
                 <?php if ($hasNextLevel): ?>
-                    <button class="modal-button" onclick="window.location.href='solo.php'">Kembali ke Menu</button>
-                    <button id="next-level-btn" class="modal-button primary" data-next-level="<?= $current_level + 1 ?>">Level Berikutnya</button>
+                    <button class="modal-button" onclick="window.location.href='solo.php'" data-key="back_to_menu_modal_button">Kembali ke Menu</button>
+                    <button id="next-level-btn" class="modal-button primary" data-next-level="<?= $current_level + 1 ?>" data-key="next_level_button_modal">Level Berikutnya</button>
                 <?php else: ?>
-                    <p class="all-levels-complete">Selamat! Anda telah menyelesaikan semua level.</p>
-                    <button class="modal-button" onclick="window.location.href='solo.php'">Kembali ke Menu</button>
+                    <p class="all-levels-complete" data-key="all_levels_complete_message">Selamat! Anda telah menyelesaikan semua level.</p>
+                    <button class="modal-button" onclick="window.location.href='solo.php'" data-key="back_to_menu_modal_button">Kembali ke Menu</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -110,8 +135,8 @@
      <div id="modal-overlay" style="display:none;">
         <div id="modal-dialog">
             <span id="modal-close">&times;</span>
-            <h2 id="modal-title">Judul Modal</h2>
-            <h4 id="modal-subtitle">Sub Judul</h4>
+            <h2 id="modal-title" data-key="modal_title_placeholder">Judul Modal</h2>
+            <h4 id="modal-subtitle" data-key="modal_subtitle_placeholder">Sub Judul</h4>
             <div id="modal-content">Isi modal di sini.</div>
         </div>
     </div>
@@ -121,5 +146,7 @@
     <script id="quiz-data" type="application/json"><?php echo json_encode($quizData); ?></script>
     <script src="game.js"></script>
     <script src="../modal.js"></script>
+    <script src="../user/translations.js"></script>
+    <script src="../user/profil.js"></script>
 </body>
 </html>

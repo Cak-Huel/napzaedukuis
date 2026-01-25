@@ -41,14 +41,55 @@ window.addEventListener("DOMContentLoaded", function () {
   const modalShown = sessionStorage.getItem("welcomeShown");
 
   if (!modalShown) {
+    let panduanImagesHTML = "";
+    const totalPanduanImages = 16;
+    for (let i = 1; i <= totalPanduanImages; i++) {
+      panduanImagesHTML += `<img src="/aset/panduan/${i}.jpg" alt="Panduan ${i}" style="width:100%; max-width:450px; margin-right:15px; flex-shrink: 0;">\n        `;
+    }
+
     showModal({
-      title: "Selamat Datang!",
-      subtitle: "Beranda Napza Edu Card",
+      title: "Selamat Datang",
+      subtitle: "Panduan",
       content: `
-      <iframe src="viewpdf.php" width="100%" height="400px" style="border:none;"></iframe>
+      <div style="display: flex; overflow-x: auto; padding-bottom: 10px;">
+        ${panduanImagesHTML.trim()}
+      </div>
     `,
     });
     sessionStorage.setItem("welcomeShown", "true");
+
+    // Logika: Tampilkan modal Materi setelah modal Panduan ditutup
+    const closeBtn = document.getElementById("modal-close");
+
+    const handleWelcomeClose = function () {
+      closeModal(); // Tutup modal pertama
+
+      // Siapkan konten Materi (sama seperti di menu Materi)
+      let materiImagesHTML = "";
+      const totalMateriImages = 21;
+      for (let i = 1; i <= totalMateriImages; i++) {
+        materiImagesHTML += `<img src="/aset/materi/${i}.jpg" alt="Materi ${i}" style="width:100%; max-width:450px; margin-bottom:15px;">\n        `;
+      }
+
+      // Tampilkan modal kedua dengan sedikit jeda agar transisi lebih halus
+      setTimeout(() => {
+        showModal({
+          title: "Materi",
+          subtitle: "",
+          content: `
+          <div style="max-height: 460px; overflow-y: auto; text-align: center;">
+            ${materiImagesHTML.trim()}
+          </div>
+        `,
+        });
+      }, 300);
+
+      // Kembalikan fungsi tombol close ke default (hanya menutup modal) agar modal kedua bisa ditutup normal
+      closeBtn.onclick = closeModal;
+    };
+
+    // Override sementara fungsi tombol close
+    closeBtn.onclick = handleWelcomeClose;
   }
 
   // Tambahkan penutup Side Bar saat link menu diklik (terutama link non-modal seperti Beranda)
@@ -69,11 +110,20 @@ const materiMenu = document.querySelector('a[href="#materi"]');
 if (materiMenu) {
   materiMenu.onclick = function (e) {
     e.preventDefault();
+
+    let materiImagesHTML = "";
+    const totalMateriImages = 21;
+    for (let i = 1; i <= totalMateriImages; i++) {
+      materiImagesHTML += `<img src="/aset/materi/${i}.jpg" alt="Materi ${i}" style="width:100%; max-width:450px; margin-bottom:15px;">\n        `;
+    }
+
     showModal({
       title: "Materi",
-      subtitle: "File PDF Materi",
+      subtitle: "",
       content: `
-      <iframe src="/gameweb/viewpdf.php" width="100%" height="400px" style="border:none;"></iframe>
+      <div style="max-height: 460px; overflow-y: auto; text-align: center;">
+        ${materiImagesHTML.trim()}
+      </div>
     `,
     });
   };
@@ -83,35 +133,21 @@ const panduanMenu = document.querySelector('a[href="#panduan"]');
 if (panduanMenu) {
   panduanMenu.onclick = function (e) {
     e.preventDefault();
+
+    let panduanImagesHTML = "";
+    const totalPanduanImages = 16;
+    for (let i = 1; i <= totalPanduanImages; i++) {
+      panduanImagesHTML += `<img src="/aset/panduan/${i}.jpg" alt="Panduan ${i}" style="width:100%; max-width:450px; margin-right:15px; flex-shrink: 0;">\n        `;
+    }
+
     showModal({
       title: "Panduan",
       subtitle: "",
       content: `
-      <div style="text-align: justify;">
-      <h3>Solo Survival</h3>
-        <ul>
-          <li>Solo survival hanya dimainkan oleh 1 orang</li>
-          <li>Memiliki beberapa level dan setiap level terdapat 5 kartu berisi
-          pertanyaan atau studi kasus</li>
-          <li>Pengguna dapat mereset level pada fitr reset kapanpun jika ingin
-          mengulang permainan dari awal</li>
-        </ul>
-        <h3>Sharpen The Brain</h3>
-        <ul>
-          <li>Sharpen the brain merupakan fitur mode multiplayer yang dapat
-          dimainkan secara bersamaan</li>
-          <li>Mode ini memiliki 2 fitur yaitu Player dan Author</li>
-          <li>Player adalah fitur untuk pemain yang bermain menggunakan kode room</li>
-          <li>Author adalah fitur untuk pembuat room yang dapat membuat pertanyaan,
-          durasi waktu menjawab, dan dapat menghapus room</li>
-          <li>Hanya ada 1 pengguna yang menjadi author dalam 1 room</li>
-          <li>Setelah athor membuat room, akan diberikan kode untuk dapat diakses oleh player</li>
-          <li>Jumlah player tidak terbatas</li>
-          <li>Author dapat memantau jumlah player dan pringkat serta skor dari
-          masing-masing player</li>
-        </ul>
+      <div style="display: flex; overflow-x: auto; padding-bottom: 10px;">
+        ${panduanImagesHTML.trim()}
       </div>
-      `,
+    `,
     });
   };
 }
@@ -125,16 +161,15 @@ if (tentangMenu) {
       subtitle: "",
       content: `
         <div style="text-align: justify;">
-          <p>Perkenalkan saya Muhammad Rafi Amrullah mahasiswa Universitas Negeri Surabaya Prodi S1 Bimbingan dan Konseling 2022 sebagai penggagas game NAPZA EDU CARD. Dan rekan saya Rahul Ubaidillah mahasiswa Universitas Negeri Surabaya Prodi S1 Pendidikan Teknologi Informasi 2023 sebagai Developer game ini.</p>
+        <a href="/aset/fot.jpg" target="_blank" rel="noopener noreferrer"><img src="/aset/fot.jpg" alt="Deskripsi Foto 1" style="width:100%; max-width:500px; display:block; margin-bottom:10px;"></a>
+          <p>Perkenalkan saya Muhammad Rafi Amrullah mahasiswa Universitas Negeri Surabaya Prodi S1 Bimbingan dan Konseling 2022 sebagai penggagas game NAPZA EDU CARD. Dan desaigner saya Rahul Ubaidillah mahasiswa Universitas Negeri Surabaya Prodi S1 Pendidikan Teknologi Informasi 2023 sebagai Developer game ini.</p>
           <p>Terimakasih saya ucapkan kepada pengguna yang telah mendukung dengan cara menggunakan, menyebarkan game berbasis website saya ini.</p>
           <p>Memang game berbasis website saya ini masih jauh dari kata sempurna. Maka dari itu, saya harap kepada pengguna khususnya web developer bisa ikut serta dalam pengembangan atau membuat versi yang lebih baik dari game berbasis website ini.</p>
           <p>Cukup sekian dan terimakasih.</p>
           <p>Kritik dan saran: <br>
-            <a href="https://github.com/Cak-Huel/napzaedukuis" target="_blank" style="color: #1f8dff;">Repository GitHub</a><br>
             <a href="https://instagram.com/rafiamrullah._" target="_blank" style="color: #1f8dff;">@rafiamrullah._</a><br>
-            <a href="https://instagram.com/rahul_lamograp" target="_blank" style="color: #1f8dff;">@rahul_lamograp</a>
           </p>
-          <p>Versi: 1.7.25 (akses awal)</p>
+          <p>Versi: 4.12.10.25 (akses awal)</p>
         </div>
       `,
     });

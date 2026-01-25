@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../pusher-config.php';
+require __DIR__ . '/../pusher_config.php';
 require __DIR__ . '/../sekret.php';
 
 header('Content-Type: application/json');
@@ -96,6 +96,6 @@ if ($next_question) {
 }
 
 // 7. Kirim response yang berisi status jawaban dan soal berikutnya
-echo json_encode(['success' => true, 'is_correct' => $is_correct, 'new_score' => $skor_terbaru, 'next_question' => $next_question]);
+echo json_encode(['success' => true, 'is_correct' => $is_correct, 'correct_answer' => $soal['jwbn_benar'], 'new_score' => $skor_terbaru, 'next_question' => $next_question]);
 
 ?>

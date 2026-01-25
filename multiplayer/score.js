@@ -42,33 +42,55 @@ document.addEventListener("DOMContentLoaded", () => {
     // Benar beruntun
     document.querySelector(".benar-beruntun").textContent = data.benar_beruntun;
 
-    // Review soal
-    const reviewSection = document.querySelector(".review-section");
-    reviewSection.innerHTML = "<h4>Review Soal</h4>";
-    data.review.forEach((item) => {
-      const div = document.createElement("div");
-      div.className = "review-item";
-      div.innerHTML = `
-        <p><strong>${item.pertanyaan}</strong></p>
-        <p class="review-options">
-          ${["A", "B", "C", "D"]
-            .map((opt) => {
-              let kelas = "";
-              if (opt === item.jawaban_user && item.benar_user)
-                kelas = "jawaban-benar";
-              else if (opt === item.jawaban_user && !item.benar_user)
-                kelas = "jawaban-salah";
-              else if (opt === item.kunci_jawaban) kelas = "jawaban-kunci";
-              return `<span class="${kelas}">${opt}. ${
-                item[`jwbn_${opt.toLowerCase()}`]
-              }</span>`;
-            })
-            .join("")}
-        </p>
-      `;
-      reviewSection.appendChild(div);
-    });
+  // --- BAGIAN RENDER REVIEW SOAL ---
+      const reviewSection = document.querySelector(".review-section");
+      reviewSection.innerHTML = "<h4>Review Soal</h4>";
+
+      data.review.forEach((item, index) => {
+          const div = document.createElement("div");
+          div.className = "review-item";
+
+          // Ambil data penting
+          const userAns = item.jawaban_user; // Contoh: "B"
+          const keyAns  = item.kunci_jawaban; // Contoh: "C"
+
+          // Generate Opsi A, B, C, D
+          const optionsHTML = ["A", "B", "C", "D"].map((opt) => {
+              let kelasTambahan = "";
+              
+              // LOGIKA UTAMA (Versi Partner Coding)
+              if (opt === userAns && opt === keyAns) {
+                  // Skenario 1: User pilih ini, dan ini Benar
+                  kelasTambahan = "user-benar";
+              } 
+              else if (opt === userAns && opt !== keyAns) {
+                  // Skenario 2: User pilih ini, tapi Salah
+                  kelasTambahan = "user-salah";
+              } 
+              else if (opt !== userAns && opt === keyAns) {
+                  // Skenario 3: User TIDAK pilih ini, tapi ini Kunci Jawaban
+                  // (Inilah KOREKSI yang kamu cari)
+                  kelasTambahan = "koreksi-jawaban";
+              }
+              // Skenario 4: Bukan pilihan user, bukan kunci -> biarkan polos
+
+              return `
+                  <div class="option-item ${kelasTambahan}">
+                      <span><strong>${opt}.</strong> ${item[`jwbn_${opt.toLowerCase()}`]}</span>
+                  </div>
+              `;
+          }).join("");
+
+          div.innerHTML = `
+              <p style="margin-bottom:10px;"><strong>${index + 1}. ${item.pertanyaan}</strong></p>
+              <div class="review-options">
+                  ${optionsHTML}
+              </div>
+          `;
+          reviewSection.appendChild(div);
+      });
   }
+
 
   // Fungsi utama untuk mengambil dan menampilkan data
   async function loadScore() {

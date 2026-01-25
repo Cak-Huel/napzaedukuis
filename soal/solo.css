@@ -1,6 +1,5 @@
 body {
-    font-family: "Comic Neue";
-    font-weight: 700;
+    font-family: "Poppins", sans-serif;
     font-style: normal;
     box-sizing: border-box;
     margin: 0;
@@ -74,7 +73,7 @@ header {
 }
 
 .btn-profil {
-    font-family: inherit;
+    font-family: "Poppins", sans-serif;
     font-size: 1rem;
     background: #fff;
     color: #1f8dff;
@@ -140,6 +139,11 @@ header {
     background: #4caf50;
     border-radius: 10px;
     transition: width 0.5s;
+}
+
+.game-stats {
+    text-align: center;
+    margin-top: 5px;
 }
 
 /* Level Map */

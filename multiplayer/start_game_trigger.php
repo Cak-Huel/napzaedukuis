@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../pusher-config.php'; // Memanggil konfigurasi Pusher
+require __DIR__ . '/../pusher_config.php'; // Memanggil konfigurasi Pusher
 require __DIR__ . '/../sekret.php'; // Memanggil koneksi DB (sesuaikan path)
 
 header('Content-Type: application/json');

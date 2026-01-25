@@ -207,7 +207,7 @@ body {
 /* Tampilan Belakang Kartu (Awalnya terbalik) */
 .card-back {
     border-radius: 27px;
-    background-image: url('../aset/card flip.png');
+    background-image: url('../aset/flip card.svg');
     background-size: cover;
     /* Mencegah gambar 'zoom' dan menjaga rasio */
     background-repeat: no-repeat;
@@ -232,17 +232,23 @@ body {
 /* B. Animasi Aktif (Zoom & Pindah ke Tengah) */
 .card.is-active {
     position: fixed;
-    width: 300px;
-    /* Lebar tetap saat aktif */
-    height: 450px;
-    /* Tinggi tetap (menjaga rasio 2:3) */
+    /* Tampilan Landscape Besar (Desktop) */
+    width: 800px;
+    height: 500px;
+    aspect-ratio: unset;
+    /* Hapus rasio 2:3 */
     top: 50%;
     left: 50%;
-    /* Pindah ke tengah (-50%) LALU perbesar (scale) */
-    transform: translate(-50%, -50%) scale(1.2);
+    /* Pindah ke tengah (-50%) */
+    transform: translate(-50%, -50%);
     z-index: 100;
     /* Hapus penundaan z-index saat aktif */
-    transition: transform 0.6s, opacity 0.6s, z-index 0s 0s;
+    transition: width 0.6s, height 0.6s, transform 0.6s, opacity 0.6s, z-index 0s 0s;
+}
+
+/* Ganti background kartu saat mode landscape (Aktif) */
+.card.is-active .card-back {
+    background-image: url('../aset/flip card.png');
 }
 
 /* C. Overlay (Latar belakang gelap) */
@@ -274,6 +280,11 @@ body {
     margin-bottom: 1rem;
 }
 
+/* Perbesar gambar saat mode landscape (Desktop) */
+.card.is-active .card-back-image {
+    height: 220px;
+}
+
 .card-back-question {
     font-size: 1.1rem;
     margin-bottom: 1rem;
@@ -294,6 +305,7 @@ body {
     background-color: #f9f9f9;
     cursor: pointer;
     text-align: left;
+    font-size: 1.2rem;
     transition: background-color 0.3s, border-color 0.3s;
 }
 
@@ -511,6 +523,18 @@ body {
         /* 2 kolom di tablet */
         padding: 1.5rem;
         gap: 1rem;
+    }
+
+    /* Kembalikan kartu aktif ke mode Portrait (Normal) di layar sempit */
+    .card.is-active {
+        width: 300px;
+        height: 450px;
+        aspect-ratio: 2 / 3;
+    }
+
+    /* Kembalikan ukuran gambar normal */
+    .card.is-active .card-back-image {
+        height: 120px;
     }
 }
 
