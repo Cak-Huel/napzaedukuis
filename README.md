@@ -21,22 +21,22 @@ Aplikasi ini dirancang untuk menguji pengetahuan pengguna tentang bahaya NAPZA m
 
 Berikut adalah beberapa tangkapan layar yang menjelaskan alur penggunaan aplikasi. Gambar-gambar ini juga ditampilkan dalam modal panduan saat pertama kali mengunjungi situs.
 
-![Panduan 1](aset/panduan/1.jpg)
-![Panduan 2](aset/panduan/2.jpg)
-![Panduan 3](aset/panduan/3.jpg)
-![Panduan 4](aset/panduan/4.jpg)
-![Panduan 5](aset/panduan/5.jpg)
-![Panduan 6](aset/panduan/6.jpg)
-![Panduan 7](aset/panduan/7.jpg)
-![Panduan 8](aset/panduan/8.jpg)
-![Panduan 9](aset/panduan/9.jpg)
-![Panduan 10](aset/panduan/10.jpg)
-![Panduan 11](aset/panduan/11.jpg)
-![Panduan 12](aset/panduan/12.jpg)
-![Panduan 13](aset/panduan/13.jpg)
-![Panduan 14](aset/panduan/14.jpg)
-![Panduan 15](aset/panduan/15.jpg)
-![Panduan 16](aset/panduan/16.jpg)
+<img src="aset/panduan/1.jpg" width="300">
+<img src="aset/panduan/2.jpg" width="300">
+<img src="aset/panduan/3.jpg" width="300">
+<img src="aset/panduan/4.jpg" width="300">
+<img src="aset/panduan/5.jpg" width="300">
+<img src="aset/panduan/6.jpg" width="300">
+<img src="aset/panduan/7.jpg" width="300">
+<img src="aset/panduan/8.jpg" width="300">
+<img src="aset/panduan/9.jpg" width="300">
+<img src="aset/panduan/10.jpg" width="300">
+<img src="aset/panduan/11.jpg" width="300">
+<img src="aset/panduan/12.jpg" width="300">
+<img src="aset/panduan/13.jpg" width="300">
+<img src="aset/panduan/14.jpg" width="300">
+<img src="aset/panduan/15.jpg" width="300">
+<img src="aset/panduan/16.jpg" width="300">
 
 ## 👥 Kontributor
 
@@ -46,4 +46,3 @@ Berikut adalah beberapa tangkapan layar yang menjelaskan alur penggunaan aplikas
 ## 🙏 Ucapan Terima Kasih
 
 Terima kasih kepada semua pengguna yang telah mendukung dengan menggunakan dan menyebarkan game edukasi berbasis website ini. Kami menyadari bahwa aplikasi ini masih jauh dari sempurna. Oleh karena itu, kritik, saran, dan kontribusi dari komunitas sangat kami harapkan untuk pengembangan versi yang lebih baik di masa depan.
-
