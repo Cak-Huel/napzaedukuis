@@ -1,0 +1,4 @@
+/sekret.php
+# Abaikan folder vendor atau log jika ada (opsional)
+*.log
+.env
