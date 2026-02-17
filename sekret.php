@@ -1,8 +1,8 @@
 <?php
-$host = "localhost:3306";
-$user = "phpmyadmin";
-$pass = "user";
-$db   = "napzaedu_napzagame";
+$host = "";
+$user = "";
+$pass = "";
+$db   = "";
 
 $conn = new mysqli($host, $user, $pass, $db);
 
