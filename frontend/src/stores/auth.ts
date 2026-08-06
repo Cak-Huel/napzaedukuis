@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
-const API_URL = 'http://localhost:5000/api'
+import { API_URL } from '@/config'
 
 interface User {
   id_user: number
@@ -38,7 +38,12 @@ export const useAuthStore = defineStore('auth', () => {
       const data = await response.json()
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Login gagal.')
+        const err = new Error(data.message || 'Login gagal.') as any;
+        if (data.requiresVerification) {
+          err.requiresVerification = true;
+          err.email = data.email;
+        }
+        throw err;
       }
 
       // Simpan token dan user

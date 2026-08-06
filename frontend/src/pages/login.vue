@@ -13,16 +13,30 @@
         <v-card class="login-card pa-2" elevation="8">
           <v-card-text class="pa-6 pa-sm-8">
             <!-- Back button -->
-            <v-btn
-              icon
-              variant="text"
-              size="small"
-              class="mb-2"
-              :aria-label="t('back_button')"
-              @click="goBack"
-            >
-              <v-icon>mdi-arrow-left</v-icon>
-            </v-btn>
+            <div class="d-flex justify-space-between">
+              <v-btn
+                icon
+                variant="text"
+                size="small"
+                class="mb-2"
+                :aria-label="t('back_button')"
+                @click="goBack"
+              >
+                <v-icon>mdi-arrow-left</v-icon>
+              </v-btn>
+              <!-- Language Switcher -->
+              <v-btn-toggle
+                v-model="currentLocale"
+                mandatory
+                density="compact"
+                rounded="lg"
+                color="primary"
+                class="lang-toggle"
+              >
+                <v-btn value="id" size="small" class="text-none"> 🇮🇩 ID </v-btn>
+                <v-btn value="en" size="small" class="text-none"> 🇬🇧 EN </v-btn>
+              </v-btn-toggle>
+            </div>
 
             <!-- Logo & Title -->
             <div class="text-center mb-6">
@@ -30,15 +44,20 @@
                 <v-img src="/logo1.png" alt="Napza Edu Card Logo" />
               </v-avatar>
               <h1 class="text-h5 font-weight-bold text-primary">
-                {{ t('login_title') }}
+                {{ t("login_title") }}
               </h1>
               <p class="text-body-2 text-medium-emphasis mt-1">
-                {{ t('login_subtitle') }}
+                {{ t("login_subtitle") }}
               </p>
             </div>
 
             <!-- Login Form -->
-            <v-form ref="formRef" v-model="formValid" @submit.prevent="handleLogin" lazy-validation>
+            <v-form
+              ref="formRef"
+              v-model="formValid"
+              @submit.prevent="handleLogin"
+              lazy-validation
+            >
               <v-text-field
                 v-model="email"
                 :label="t('email_label')"
@@ -76,9 +95,25 @@
                 elevation="2"
               >
                 <v-icon start>mdi-login</v-icon>
-                {{ t('login_button') }}
+                {{ t("login_button") }}
               </v-btn>
             </v-form>
+
+            <!-- Resend verification for unverified accounts -->
+            <v-btn
+              v-if="showResendBtn"
+              color="secondary"
+              variant="outlined"
+              size="large"
+              block
+              :loading="resending"
+              class="mt-3 text-none"
+              elevation="1"
+              @click="handleResendVerification"
+            >
+              <v-icon start>mdi-email-send-outline</v-icon>
+              {{ t("resend_verification_btn") }}
+            </v-btn>
 
             <!-- Divider -->
             <div class="d-flex align-center my-5">
@@ -88,36 +123,17 @@
             <!-- Register link -->
             <div class="text-center">
               <span class="text-body-2 text-medium-emphasis">
-                {{ t('no_account_text') }}
+                {{ t("no_account_text") }}
               </span>
               <router-link
                 to="/register"
                 class="text-body-2 font-weight-bold text-primary text-decoration-none ms-1"
               >
-                {{ t('register_link') }}
+                {{ t("register_link") }}
               </router-link>
             </div>
           </v-card-text>
         </v-card>
-
-        <!-- Language switcher -->
-        <div class="text-center mt-4">
-          <v-btn-toggle
-            v-model="currentLocale"
-            mandatory
-            density="compact"
-            rounded="lg"
-            color="primary"
-            class="lang-toggle"
-          >
-            <v-btn value="id" size="small" class="text-none">
-              🇮🇩 ID
-            </v-btn>
-            <v-btn value="en" size="small" class="text-none">
-              🇬🇧 EN
-            </v-btn>
-          </v-btn-toggle>
-        </div>
       </v-col>
     </v-row>
 
@@ -143,101 +159,159 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { ref, computed, watch, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import { API_URL } from "@/config";
 
-const { t, locale } = useI18n()
-const router = useRouter()
-const route = useRoute()
-const authStore = useAuthStore()
+const { t, locale } = useI18n();
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthStore();
 
 // Form state
-const formRef = ref()
-const formValid = ref(false)
-const email = ref('')
-const password = ref('')
-const showPassword = ref(false)
+const formRef = ref();
+const formValid = ref(false);
+const email = ref("");
+const password = ref("");
+const showPassword = ref(false);
 
 // Language switcher
 const currentLocale = computed({
   get: () => locale.value,
-  set: (val: string) => { locale.value = val },
-})
+  set: (val: string) => {
+    locale.value = val;
+  },
+});
 
 // Snackbar
 const snackbar = ref({
   show: false,
-  text: '',
-  color: 'success',
-  icon: 'mdi-check-circle',
-})
+  text: "",
+  color: "success",
+  icon: "mdi-check-circle",
+});
 
-function showNotification(text: string, color = 'success', icon = 'mdi-check-circle') {
-  snackbar.value = { show: true, text, color, icon }
+function showNotification(
+  text: string,
+  color = "success",
+  icon = "mdi-check-circle",
+) {
+  snackbar.value = { show: true, text, color, icon };
 }
 
 // Validation rules
 const emailRules = [
-  (v: string) => !!v || t('validation_required', { field: t('email_label') }),
-  (v: string) => /.+@.+\..+/.test(v) || t('validation_email'),
-]
+  (v: string) => !!v || t("validation_required", { field: t("email_label") }),
+  (v: string) => /.+@.+\..+/.test(v) || t("validation_email"),
+];
 
 const passwordRules = [
-  (v: string) => !!v || t('validation_required', { field: t('password_label') }),
-  (v: string) => v.length >= 3 || t('validation_min_length', { field: t('password_label'), min: 3 }),
-]
+  (v: string) =>
+    !!v || t("validation_required", { field: t("password_label") }),
+  (v: string) =>
+    v.length >= 3 ||
+    t("validation_min_length", { field: t("password_label"), min: 3 }),
+];
 
 // Login handler
 async function handleLogin() {
-  const { valid } = await formRef.value.validate()
-  if (!valid) return
+  const { valid } = await formRef.value.validate();
+  if (!valid) return;
 
   try {
-    const data = await authStore.login(email.value, password.value)
+    const data = await authStore.login(email.value, password.value);
 
     showNotification(
-      t('login_success', { name: data.user.nama }),
-      'success',
-      'mdi-check-circle'
-    )
+      t("login_success", { name: data.user.nama }),
+      "success",
+      "mdi-check-circle",
+    );
 
     // Redirect berdasarkan role setelah 800ms
     setTimeout(() => {
-      if (data.user.role === 'admin') {
-        router.push('/admin')
+      if (data.user.role === "admin") {
+        router.push("/admin");
       } else {
-        router.push('/')
+        router.push("/");
       }
-    }, 800)
+    }, 800);
   } catch (error: any) {
+    if (error.requiresVerification) {
+      showResendBtn.value = true;
+      unverifiedEmail.value = error.email || email.value;
+    }
     showNotification(
-      error.message || t('login_error_server'),
-      'error',
-      'mdi-alert-circle'
-    )
+      error.message || t("login_error_server"),
+      "error",
+      "mdi-alert-circle",
+    );
+  }
+}
+
+// Resend verification email handler
+const showResendBtn = ref(false);
+const unverifiedEmail = ref("");
+const resending = ref(false);
+
+async function handleResendVerification() {
+  if (!unverifiedEmail.value) return;
+  resending.value = true;
+  try {
+    const res = await fetch(`${API_URL}/auth/resend-verification`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: unverifiedEmail.value }),
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showNotification(
+        data.message || t("registration_success_desc"),
+        "success",
+        "mdi-email-check",
+      );
+      showResendBtn.value = false;
+
+      // If we got a preview URL in console/response (Ethereal test mode)
+      if (data.preview_url) {
+        console.log(`✉️ Test email link: ${data.preview_url}`);
+        window.open(data.preview_url, "_blank");
+      }
+    } else {
+      showNotification(
+        data.message || t("login_error_server"),
+        "error",
+        "mdi-alert-circle",
+      );
+    }
+  } catch (err) {
+    showNotification(t("login_error_server"), "error", "mdi-alert-circle");
+  } finally {
+    resending.value = false;
   }
 }
 
 // Navigate back
 function goBack() {
-  router.push('/')
+  router.push("/");
 }
 
 // Check for registration success query param
 onMounted(() => {
-  if (route.query.registered === 'true') {
-    showNotification(t('register_success'), 'success', 'mdi-check-circle')
+  if (route.query.registered === "true") {
+    showNotification(t("register_success"), "success", "mdi-check-circle");
     // Clean URL
-    router.replace({ query: {} })
+    router.replace({ query: {} });
   }
 
   // If already logged in, redirect
   if (authStore.isLoggedIn) {
-    router.push('/')
+    router.push("/");
   }
-})
+});
 </script>
 
 <style scoped>
@@ -290,10 +364,19 @@ onMounted(() => {
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(30px, -30px) scale(1.05); }
-  50% { transform: translate(-20px, 20px) scale(0.95); }
-  75% { transform: translate(15px, 10px) scale(1.02); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(30px, -30px) scale(1.05);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+  75% {
+    transform: translate(15px, 10px) scale(1.02);
+  }
 }
 
 /* Card styling */
@@ -302,7 +385,9 @@ onMounted(() => {
   z-index: 1;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(var(--v-theme-primary), 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .login-card:hover {
